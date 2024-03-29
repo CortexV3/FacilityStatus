@@ -1,0 +1,1429 @@
+repeat task.wait() until game.Players.LocalPlayer
+local Player = game.Players.LocalPlayer 
+local GameCamera = workspace.CurrentCamera
+local Mouse = Player:GetMouse()
+local InputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+
+game:GetService("ProximityPromptService").PromptShown:Connect(function(Prompt)
+	Prompt.HoldDuration = 0.2
+end)
+
+local VariablesTable = {
+	["HighlightEnabled"] = false,
+	["NoclipEnabled"] = false,
+	["AutoaimEnabled"] = false,
+	["PlayerTeleportEnabled"] = false,
+	["HitboxEnabled"] = false,
+	["WalkSpeedOverwrite"] = false,
+	["LightEnabled"] = false,
+	["JetMechanicsEnabled"] = false,
+	["ScanViewsEnabled"] = false,
+	["ReturnTeleport"] = false,
+	["TeleportOffset"] = 2,
+	["WalkSpeed"] = 16,
+	["RunSpeed"] = 20,
+	["MaxBoostSpeed"] = 1500,
+	["GPSLocator"] = false,
+	["LaunchPosition"] = Vector3.new(0,0,0),
+	["InfiniteJumpEnabled"] = false,
+	["DoubleJumpEnabled"] = false,
+	["JumpCount"] = 1,
+	["JumpsLeft"] = 1,
+	["SettingKeybinds"] = {
+		["Value"] = false,
+		["Button"] = nil,
+		["ButtonVariable"] = ""
+	},
+	["WallClimbEnabled"] = false,
+	["SurfaceClimbEnabled"] = false,
+	["ObjectPing"] = "",
+	["ObjectPingList"] = {},
+	["Keys Tracked"] = {}
+}
+
+local KeyMappingTable = {
+	["HighlightEnabled"] = {
+		["Enum"] = Enum.KeyCode.T,
+		["Variable"] = "HighlightEnabled",
+		["ToggleButton"] = nil,
+		["ObjectTag"] = ""
+	},
+	["GPSLocator"] = {
+		["Enum"] = Enum.KeyCode.Minus,
+		["Variable"] = "GPSLocator",
+		["ToggleButton"] = nil,
+		["ObjectTag"] = ""
+	},
+	["NoclipEnabled"] = {
+		["Enum"] = Enum.KeyCode.N,
+		["Variable"] = "NoclipEnabled",
+		["ToggleButton"] = nil,
+		["ObjectTag"] = ""
+	},
+	["AutoaimEnabled"] = {
+		["Enum"] = Enum.KeyCode.P,
+		["Variable"] = "AutoaimEnabled",
+		["ToggleButton"] = nil,
+		["ObjectTag"] = ""
+	},
+	["JetMechanicsEnabled"] = {
+		["Enum"] = Enum.KeyCode.Minus,
+		["Variable"] = "JetMechanicsEnabled",
+		["ToggleButton"] = nil,
+		["ObjectTag"] = ""
+	},
+	["PlayerTeleportEnabled"] = {
+		["Enum"] = Enum.KeyCode.Q,
+		["Variable"] = "PlayerTeleportEnabled",
+		["ToggleButton"] = nil,
+		["ObjectTag"] = ""
+	},
+	["WalkSpeedOverwrite"] = {
+		["Enum"] = Enum.KeyCode.Minus,
+		["Variable"] = "WalkSpeedOverwrite",
+		["ToggleButton"] = nil,
+		["ObjectTag"] = ""
+	},
+	["HitboxEnabled"] = {
+		["Enum"] = Enum.KeyCode.K,
+		["Variable"] = "HitboxEnabled",
+		["ToggleButton"] = nil,
+		["ObjectTag"] = ""
+	},
+	["LightEnabled"] = {
+		["Enum"] = Enum.KeyCode.L,
+		["Variable"] = "LightEnabled",
+		["ToggleButton"] = nil,
+		["ObjectTag"] = ""
+	},
+	["InfiniteJumpEnabled"] = {
+		["Enum"] = Enum.KeyCode.M,
+		["Variable"] = "InfiniteJumpEnabled",
+		["ToggleButton"] = nil,
+		["ObjectTag"] = ""
+	},
+	["ScanViewsEnabled"] = {
+		["Enum"] = Enum.KeyCode.Z,
+		["Variable"] = "ScanViewsEnabled",
+		["ToggleButton"] = nil,
+		["ObjectTag"] = ""
+	},
+	["ReturnTeleport"] = {
+		["Enum"] = Enum.KeyCode.Minus,
+		["Variable"] = "ReturnTeleport",
+		["ToggleButton"] = nil,
+		["ObjectTag"] = ""
+	},
+	["WallClimbEnabled"] = {
+		["Enum"] = Enum.KeyCode.Minus,
+		["Variable"] = "WallClimbEnabled",
+		["ToggleButton"] = nil,
+		["ObjectTag"] = ""
+	},
+	["DoubleJumpEnabled"] = {
+		["Enum"] = Enum.KeyCode.Minus,
+		["Variable"] = "DoubleJumpEnabled",
+		["ToggleButton"] = nil,
+		["ObjectTag"] = ""
+	},
+	["SurfaceClimbEnabled"] = {
+		["Enum"] = Enum.KeyCode.Minus,
+		["Variable"] = "SurfaceClimbEnabled",
+		["ToggleButton"] = nil,
+		["ObjectTag"] = ""
+	}
+}
+
+--Variables and Setup
+
+function AddStrokeToObject(Object,Thickness,UICorner,Roundness)
+	local Stroke = Instance.new("UIStroke")
+	Stroke.Name = "Outline"
+	Stroke.Color = Color3.new(1,1,1)
+	Stroke.Parent = Object
+	Stroke.Thickness = Thickness
+	Stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	if UICorner then
+		local Corner = Instance.new("UICorner")
+		Corner.Name = "Corner"
+		Corner.Parent = Object
+		Corner.CornerRadius = UDim.new(0,Roundness)
+	end
+end
+
+function AddButton(Name,Parent,TextColor,Text)
+	local Button = Instance.new("TextButton")
+	Button.Parent = Parent
+	Button.BackgroundTransparency = 0.25
+	Button.BackgroundColor3 = Color3.new(0,0,0)
+	Button.TextColor3 = TextColor
+	Button.Name = Name
+	Button.Text = Text
+	Button.TextScaled = true
+	Button.Font = Enum.Font.SciFi
+	return Button
+end
+
+function AddTextBox(Name,Parent,TextColor,Text)
+	local Button = Instance.new("TextBox")
+	Button.Parent = Parent
+	Button.BackgroundTransparency = 0.25
+	Button.BackgroundColor3 = Color3.new(0,0,0)
+	Button.TextColor3 = TextColor
+	Button.Name = Name
+	Button.PlaceholderText = Text
+	Button.PlaceholderColor3 = Color3.new(0.6,0.6,0.6)
+	Button.Text = ""
+	Button.TextScaled = true
+	Button.Font = Enum.Font.SciFi
+	return Button
+
+end
+
+local CoreGui = game.CoreGui
+
+local Gui = Instance.new("ScreenGui")
+Gui.Parent = CoreGui
+local Main = Instance.new("Frame")
+Main.Parent = Gui
+Main.Position = UDim2.fromScale(0.25,0.5)
+Main.Size = UDim2.fromScale(0.5,0.5)
+Main.BackgroundTransparency = 0.25
+Main.BackgroundColor3 = Color3.new(0,0,0)
+
+Main.Draggable = true
+Main.Selectable = true
+Main.Active = true
+
+AddStrokeToObject(Main,5,true,45)
+
+local UIGrid = Instance.new("UIGridLayout")
+UIGrid.Parent = Main
+UIGrid.CellSize = UDim2.fromScale(0.25,0.1)
+UIGrid.CellPadding = UDim2.fromOffset(0.2,0.5)
+UIGrid.StartCorner = Enum.StartCorner.TopLeft
+UIGrid.FillDirection = Enum.FillDirection.Horizontal
+UIGrid.HorizontalAlignment = Enum.HorizontalAlignment.Center
+
+local HighlightToggleButton = AddButton("HighlightEnabled",Main,Color3.new(1,1,1),"Highlight Toggle: "..KeyMappingTable.HighlightEnabled.Enum.Name)
+AddStrokeToObject(HighlightToggleButton,2.5,true,20)
+
+KeyMappingTable.HighlightEnabled.ToggleButton = HighlightToggleButton
+KeyMappingTable.HighlightEnabled.ObjectTag = "Highlight Toggle: "
+
+local WalkSpeedOverwriteButton = AddButton("WalkSpeedOverwrite",Main,Color3.new(1,1,1),"Speed Mod Toggle: "..KeyMappingTable.WalkSpeedOverwrite.Enum.Name)
+AddStrokeToObject(WalkSpeedOverwriteButton,2.5,true,20)
+
+KeyMappingTable.WalkSpeedOverwrite.ToggleButton = WalkSpeedOverwriteButton
+KeyMappingTable.WalkSpeedOverwrite.ObjectTag = "Speed Mod Toggle: "
+
+local NoclipToggleButton = AddButton("NoclipEnabled",Main,Color3.new(1,1,1),"Noclip Toggle: "..KeyMappingTable.NoclipEnabled.Enum.Name)
+AddStrokeToObject(NoclipToggleButton,2.5,true,20)
+KeyMappingTable.NoclipEnabled.ToggleButton = NoclipToggleButton
+KeyMappingTable.NoclipEnabled.ObjectTag = "Noclip Toggle: "
+
+local SurfaceClimbEnabled = AddButton("SurfaceClimbEnabled",Main,Color3.new(1,1,1),"Surface Climb Toggle: "..KeyMappingTable.SurfaceClimbEnabled.Enum.Name)
+AddStrokeToObject(SurfaceClimbEnabled,2.5,true,20)
+KeyMappingTable.SurfaceClimbEnabled.ToggleButton = SurfaceClimbEnabled
+KeyMappingTable.SurfaceClimbEnabled.ObjectTag = "Surface Climb Toggle: "
+
+local AutoaimToggleButton = AddButton("AutoaimEnabled",Main,Color3.new(1,1,1),"Autoaim Toggle: "..KeyMappingTable.AutoaimEnabled.Enum.Name)
+AddStrokeToObject(AutoaimToggleButton,2.5,true,20)
+KeyMappingTable.AutoaimEnabled.ToggleButton = AutoaimToggleButton
+KeyMappingTable.AutoaimEnabled.ObjectTag = "Autoaim Toggle: "
+
+local WallClimbToggleButton = AddButton("WallClimbEnabled",Main,Color3.new(1,1,1),"WallClimb Toggle: "..KeyMappingTable.WallClimbEnabled.Enum.Name)
+AddStrokeToObject(WallClimbToggleButton,2.5,true,20)
+KeyMappingTable.WallClimbEnabled.ToggleButton = WallClimbToggleButton
+KeyMappingTable.WallClimbEnabled.ObjectTag = "WallClimb Toggle: "
+
+local PlayerTeleportToggleButton = AddButton("PlayerTeleportEnabled",Main,Color3.new(1,1,1),"Player Teleport Toggle: "..KeyMappingTable.PlayerTeleportEnabled.Enum.Name)
+AddStrokeToObject(PlayerTeleportToggleButton,2.5,true,20)
+KeyMappingTable.PlayerTeleportEnabled.ToggleButton = PlayerTeleportToggleButton
+KeyMappingTable.PlayerTeleportEnabled.ObjectTag = "Player Teleport Toggle: "
+
+local HitboxToggleButton = AddButton("HitboxEnabled",Main,Color3.new(1,1,1),"Hitbox Toggle: "..KeyMappingTable.HitboxEnabled.Enum.Name)
+AddStrokeToObject(HitboxToggleButton,2.5,true,20)
+KeyMappingTable.HitboxEnabled.ToggleButton = HitboxToggleButton
+KeyMappingTable.HitboxEnabled.ObjectTag = "Hitbox Toggle: "
+
+local GPSLocatorButton = AddButton("GPSLocator",Main,Color3.new(1,1,1),"GPSLocator Toggle: "..KeyMappingTable.GPSLocator.Enum.Name)
+AddStrokeToObject(GPSLocatorButton,2.5,true,20)
+KeyMappingTable.GPSLocator.ToggleButton = GPSLocatorButton
+KeyMappingTable.GPSLocator.ObjectTag = "GPSLocator Toggle: "
+
+local LightToggleButton = AddButton("LightEnabled",Main,Color3.new(1,1,1),"Light Toggle: "..KeyMappingTable.LightEnabled.Enum.Name)
+AddStrokeToObject(LightToggleButton,2.5,true,20)
+KeyMappingTable.LightEnabled.ToggleButton = LightToggleButton
+KeyMappingTable.LightEnabled.ObjectTag = "Light Toggle: "
+
+local InfiniteJumpToggleButton = AddButton("InfiniteJumpEnabled",Main,Color3.new(1,1,1),"Infinite Jump Toggle: "..KeyMappingTable.InfiniteJumpEnabled.Enum.Name)
+AddStrokeToObject(InfiniteJumpToggleButton,2.5,true,20)
+KeyMappingTable.InfiniteJumpEnabled.ToggleButton = InfiniteJumpToggleButton
+KeyMappingTable.InfiniteJumpEnabled.ObjectTag = "Infinite Jump Toggle: "
+
+local DoubleJumpToggleButton = AddButton("DoubleJumpEnabled",Main,Color3.new(1,1,1),"Double Jump Toggle: "..KeyMappingTable.DoubleJumpEnabled.Enum.Name)
+AddStrokeToObject(DoubleJumpToggleButton,2.5,true,20)
+KeyMappingTable.DoubleJumpEnabled.ToggleButton = DoubleJumpToggleButton
+KeyMappingTable.DoubleJumpEnabled.ObjectTag = "Double Jump Toggle: "
+
+local ScanViewToggleButton = AddButton("ScanViewsEnabled",Main,Color3.new(1,1,1),"Scan view Toggle: "..KeyMappingTable.ScanViewsEnabled.Enum.Name)
+AddStrokeToObject(ScanViewToggleButton,2.5,true,20)
+KeyMappingTable.ScanViewsEnabled.ToggleButton = InfiniteJumpToggleButton
+KeyMappingTable.ScanViewsEnabled.ObjectTag = "Scan view Toggle: "
+
+local ReturnTeleportButton = AddButton("ReturnTeleport",Main,Color3.new(1,1,1),"Return Teleport Toggle: "..KeyMappingTable.ReturnTeleport.Enum.Name)
+AddStrokeToObject(ReturnTeleportButton,2.5,true,20)
+KeyMappingTable.ReturnTeleport.ToggleButton = ReturnTeleportButton
+KeyMappingTable.ReturnTeleport.ObjectTag = "Return Teleport Toggle: "
+
+local TeleportOffsetButton = AddTextBox("OffsetBox",Main,Color3.new(1,1,1),"Teleport Offset")
+AddStrokeToObject(TeleportOffsetButton,2.5,true,20)
+TeleportOffsetButton.PlaceholderText = "Teleport Offset: "..tostring(VariablesTable.TeleportOffset)
+
+TeleportOffsetButton.FocusLost:Connect(function()
+	local Number = tonumber(TeleportOffsetButton.Text)
+	if Number then
+		VariablesTable.TeleportOffset = Number
+		TeleportOffsetButton.Text = ""
+		TeleportOffsetButton.PlaceholderText = "Teleport Offset: "..tostring(Number)
+	else
+		TeleportOffsetButton.Text = ""
+	end
+end)
+
+local JumpCountButton = AddTextBox("DoubleJumpMax",Main,Color3.new(1,1,1),"Double Jump Max: ")
+AddStrokeToObject(JumpCountButton,2.5,true,20)
+JumpCountButton.PlaceholderText = "Double Jump Max: "..tostring(VariablesTable.JumpCount)
+
+JumpCountButton.FocusLost:Connect(function()
+	local Number = tonumber(JumpCountButton.Text)
+	if Number then
+		VariablesTable.JumpCount = Number
+		JumpCountButton.Text = ""
+		JumpCountButton.PlaceholderText = "Double Jump Max: "..tostring(Number)
+		VariablesTable.JumpsLeft = Number
+	else
+		JumpCountButton.Text = ""
+	end
+end)
+
+local WalkSpeedButton = AddTextBox("WalkSpeed",Main,Color3.new(1,1,1),"WalkSpeed")
+AddStrokeToObject(WalkSpeedButton,2.5,true,20)
+WalkSpeedButton.PlaceholderText = "WalkSpeed: "..tostring(VariablesTable.WalkSpeed)
+
+WalkSpeedButton.FocusLost:Connect(function()
+	local Number = tonumber(WalkSpeedButton.Text)
+	if Number then
+		VariablesTable.WalkSpeed = Number
+		WalkSpeedButton.Text = ""
+		WalkSpeedButton.PlaceholderText = "WalkSpeed: "..tostring(Number)
+	else
+		WalkSpeedButton.Text = ""
+	end
+end)
+local BoostSpeedButton = AddTextBox("BoostSpeed",Main,Color3.new(1,1,1),"BoostSpeed")
+AddStrokeToObject(BoostSpeedButton,2.5,true,20)
+BoostSpeedButton.PlaceholderText = "BoostSpeed: "..tostring(VariablesTable.MaxBoostSpeed)
+
+BoostSpeedButton.FocusLost:Connect(function()
+	local Number = tonumber(BoostSpeedButton.Text)
+	if Number then
+		VariablesTable.MaxBoostSpeed = Number
+		BoostSpeedButton.Text = ""
+		BoostSpeedButton.PlaceholderText = "BoostSpeed: "..tostring(Number)
+	else
+		BoostSpeedButton.Text = ""
+	end
+end)
+
+local RunSpeedButton = AddTextBox("RunSpeed",Main,Color3.new(1,1,1),"RunSpeed")
+AddStrokeToObject(RunSpeedButton,2.5,true,20)
+RunSpeedButton.PlaceholderText = "RunSpeed: "..tostring(VariablesTable.RunSpeed)
+
+RunSpeedButton.FocusLost:Connect(function()
+	local Number = tonumber(RunSpeedButton.Text)
+	if Number then
+		VariablesTable.RunSpeed = Number
+		RunSpeedButton.Text = ""
+		RunSpeedButton.PlaceholderText = "RunSpeed: "..tostring(Number)
+	else
+		RunSpeedButton.Text = ""
+	end
+end)
+
+local ObjectPingButton = AddTextBox("ObjectPing",Main,Color3.new(1,1,1),"ObjectPing")
+AddStrokeToObject(ObjectPingButton,2.5,true,20)
+ObjectPingButton.PlaceholderText = "ObjectPing: "..tostring(VariablesTable.ObjectPing)
+
+function MatchKey(Key)
+	
+	if not table.find(VariablesTable["Keys Tracked"],string.lower(Key)) then
+		table.insert(VariablesTable["Keys Tracked"],string.lower(Key))
+	end
+	
+	for i,Object in pairs(workspace:GetDescendants()) do
+		if not table.find(VariablesTable.ObjectPingList,Object) and string.find(string.lower(Object.Name),string.lower(Key)) then
+			local Bill = Instance.new("BillboardGui")
+			Bill.Size = UDim2.fromOffset(50,50)
+			Bill.Name = "ProximityPrompt"
+			Bill.AlwaysOnTop = true
+			Bill.LightInfluence = 0
+			local Frame = Instance.new("Frame")
+			Frame.Size = UDim2.fromScale(1,1)
+			Frame.BackgroundColor3 = Color3.new(1,0,0)
+			Frame.Parent = Bill
+			Bill.Parent = Object
+			table.insert(VariablesTable.ObjectPingList,Object)
+		end
+		task.wait()
+	end
+	
+end
+
+function ClearPinged()
+	VariablesTable["Keys Tracked"] = {}
+	for i,Object in pairs(VariablesTable.ObjectPingList) do
+		if Object then
+			if Object:FindFirstChild("ProximityPrompt") then
+				Object.ProximityPrompt:Destroy()
+			end
+		end
+		task.wait()
+	end
+	VariablesTable.ObjectPingList = {}
+end
+
+workspace.DescendantAdded:Connect(function(Added)
+	local MatchString = nil
+	if #VariablesTable["Keys Tracked"] > 0 then
+		for i,String in pairs(VariablesTable["Keys Tracked"]) do
+			if string.find(string.lower(Added.Name),String) then
+				MatchString = String
+			end
+		end
+		if MatchString then
+			MatchKey(MatchString)
+		end
+	end
+end)
+
+ObjectPingButton.FocusLost:Connect(function()
+	local Keyword = ObjectPingButton.Text
+	if Keyword and Keyword ~= "" then
+		if Keyword ~= "actclear" then
+			ObjectPingButton.Text = ""
+			ObjectPingButton.PlaceholderText = "ObjectPing: "..Keyword
+			MatchKey(Keyword)
+		else
+			ObjectPingButton.Text = "Clearing Objects"
+			ClearPinged()
+			task.wait(0.5)
+			ObjectPingButton.Text = "Objects Cleared"
+			task.wait(0.5)
+			ObjectPingButton.Text = ""
+			ObjectPingButton.PlaceholderText = "ObjectPing: "
+		end
+	else
+		ObjectPingButton.Text = ""
+	end
+end)
+
+local JetMechanicsButton = AddButton("JetMechanicsEnabled",Main,Color3.new(1,1,1),"Jet Mechanics Toggle: "..KeyMappingTable.JetMechanicsEnabled.Enum.Name)
+AddStrokeToObject(JetMechanicsButton,2.5,true,20)
+KeyMappingTable.JetMechanicsEnabled.ToggleButton = JetMechanicsButton
+KeyMappingTable.JetMechanicsEnabled.ObjectTag = "Jet Mechanics Toggle: "
+
+--Main functions
+
+--Variables
+
+local PlayerCharacter,Humanoid = nil,nil
+
+--Tables
+
+local CharacterKillIgnore = {
+	"DanoDoe",
+	"H20_Dead",
+	"Kilkrieg",
+	"ShadowGamingStudios",
+	"TheBaconWithSkilll",
+	"theundeadkillmaster1",
+	"ijendra123",
+	"Doe_AI",
+	"crazycrazyo",
+	"mrrandomguy7000",
+	"murderassassin2356",
+	"Kilkreig",
+	"MrsUnvaccinated",
+	"logieblake666",
+	"dadawdsadwqdwf",
+	"erqnrs",
+	"yonatan_1234675",
+	"1966x666",
+	"TheWhisler",
+	"littlekitten2552"
+}
+
+local HighlightTable = {}
+local HighlightClearEnabled = false
+
+local ClipTable = {}
+local NocLipClearEnabled = false
+
+local HitboxClearEnabled = false
+
+--Player Character
+
+function GetCharacterData(RequiresHumanoid)
+	local Character = Player.Character
+	if Character then
+		if RequiresHumanoid then
+			if Character:FindFirstChildWhichIsA("Humanoid") and Character.PrimaryPart then
+				return Character,Character:FindFirstChildWhichIsA("Humanoid")
+			else
+				return nil,nil
+			end
+		else
+			return Character
+		end
+	else
+		return nil
+	end
+end
+
+function GetHeadObject(Model)	
+	local Torso = Model:FindFirstChild("Torso") or Model:FindFirstChild("UpperTorso") or Model:FindFirstChild("HumanoidRootPart")
+	if Torso then
+		if Torso:FindFirstChild("Neck") then
+			local Head = Torso:FindFirstChild("Neck").Part1
+			if Head then
+				return Head
+			else
+				return Torso
+			end
+		end
+	end
+end
+
+--Highlights-[
+
+function AddOutline(PlayerModel,Color)
+	local Outliner = PlayerModel:FindFirstChildWhichIsA("Highlight")
+	if PlayerModel then
+		if Outliner and not table.find(HighlightTable,Outliner) then
+			table.insert(HighlightTable,Outliner)
+		else
+			local Outline = Instance.new("Highlight") 
+			Outline.Adornee = PlayerModel
+			Outline.Parent = PlayerModel
+			Outline.FillTransparency = 1
+			Outline.OutlineColor = Color
+			Outline.Name = "Outliner"
+			table.insert(HighlightTable,Outline)
+		end
+	end
+end
+
+function ClearTable()
+	if #HighlightTable > 0 then
+		for i,Part in pairs(HighlightTable) do
+			Part:Destroy()   
+		end
+	end
+end
+
+function LoopPlayers()
+	if not HighlightClearEnabled then
+		HighlightClearEnabled = true
+	end
+	if PlayerCharacter and Humanoid then
+		for i,Plr in pairs(game.Players:GetChildren()) do
+			local PlrChar = Plr.Character
+			if PlrChar and PlrChar.PrimaryPart and not PlrChar:FindFirstChildWhichIsA("Highlight") then
+				if table.find(CharacterKillIgnore,Plr.Name) then
+					AddOutline(PlrChar,Color3.new(0,0,1))
+				else
+					if (PlrChar.PrimaryPart.Position - PlayerCharacter.PrimaryPart.Position).Magnitude <= 200 then
+						AddOutline(PlrChar,Color3.new(1,0,0))
+					else
+						AddOutline(PlrChar,Color3.new(0,1,0))
+					end
+				end
+			end
+		end
+	end
+end
+
+--]
+
+--Noclip-[
+
+function SetCollisions()
+	if not NocLipClearEnabled then
+		NocLipClearEnabled = true
+	end
+
+	if PlayerCharacter then
+		local Bound = workspace:GetPartBoundsInBox(PlayerCharacter.PrimaryPart.CFrame,PlayerCharacter.PrimaryPart.Size + Vector3.new(1,3,1))
+		for i,Part in pairs(Bound) do
+			if Part.CanCollide == true and not Part:IsDescendantOf(PlayerCharacter) and not table.find(ClipTable,Part) then
+				Part.CanCollide = false
+				table.insert(ClipTable,Part)
+			end    
+		end
+		for i,Part in pairs(ClipTable) do
+			if not table.find(Bound,Part) then
+				Part.CanCollide = true
+				table.remove(ClipTable,table.find(ClipTable,Part))
+			end
+		end
+	end
+end
+
+--]
+
+--Autoaim-[
+
+function AimSetup(Model)
+	local TargetHumanoid = Model:FindFirstChild("Humanoid")
+	if PlayerCharacter and TargetHumanoid and InputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton2) then
+		local Range = math.random(-1,1)/2
+		repeat
+			local Goal = CFrame.lookAt(GameCamera.CFrame.Position,Model.PrimaryPart.Position+Vector3.new(0,Range,0),Vector3.new(0,1,0))
+			for i = 0,1,0.25 do
+				GameCamera.CFrame = GameCamera.CFrame:Lerp(Goal,i)
+				task.wait()
+			end
+			task.wait()
+		until not PlayerCharacter or not TargetHumanoid or TargetHumanoid.Health <= 1 or not InputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton2)
+		if Model:FindFirstChildWhichIsA("Highlight") and TargetHumanoid then
+			Model:FindFirstChildWhichIsA("Highlight"):Destroy()
+		end
+	end
+end
+
+function AutoAimTargets()
+	local Hit = Mouse.Hit
+	if Hit then
+		local Model = nil
+		local Distance = 75
+		if PlayerCharacter then
+			for i,Plr in pairs(game.Players:GetChildren()) do
+				if Plr.Character and not table.find(CharacterKillIgnore,Plr.Name) and Plr.Character.PrimaryPart and Plr.Character:FindFirstChild("Humanoid") then
+					if (Plr.Character.PrimaryPart.Position - Hit.Position).Magnitude < Distance and Plr.Character:FindFirstChild("Humanoid").Health > 1 then
+						Distance = (Plr.Character.PrimaryPart.Position - Hit.Position).Magnitude
+						Model = Plr.Character
+					end
+				end
+			end
+		end
+		if Model and Model:FindFirstChild("Humanoid") then
+			if Model:FindFirstChildWhichIsA("Highlight") then
+				AimSetup(Model)
+			end
+		end
+	end
+end
+
+--]
+
+--Teleport To Players-[
+
+function TeleportPlayer(TargetCharacter)
+	if PlayerCharacter and TargetCharacter and VariablesTable.PlayerTeleportEnabled == false then
+		VariablesTable["PlayerTeleportEnabled"] = true
+		local ReturnCharacterCFrame = PlayerCharacter.PrimaryPart.CFrame
+		repeat
+			PlayerCharacter:PivotTo(TargetCharacter.PrimaryPart.CFrame * CFrame.new(0,0,VariablesTable.TeleportOffset))
+			RunService.Heartbeat:Wait()
+		until not PlayerCharacter or not TargetCharacter or not TargetCharacter.PrimaryPart or not InputService:IsKeyDown(KeyMappingTable.PlayerTeleportEnabled.Enum)
+		if PlayerCharacter and VariablesTable.ReturnTeleport then
+			PlayerCharacter:PivotTo(ReturnCharacterCFrame)
+		end
+	end
+end
+
+function GetClosestPlayer()
+	local Nearest = nil
+	local Distance = 1000
+	if PlayerCharacter then
+		for i,Plr in pairs(game.Players:GetChildren()) do
+			if Plr.Character and not table.find(CharacterKillIgnore,Plr.Name) and Plr.Character.PrimaryPart then
+				if (Plr.Character.PrimaryPart.Position - PlayerCharacter.PrimaryPart.Position).Magnitude < Distance then
+					Distance = (Plr.Character.PrimaryPart.Position - PlayerCharacter.PrimaryPart.Position).Magnitude
+					Nearest = Plr.Character
+				end
+			end
+		end
+	end
+	if Nearest then
+		TeleportPlayer(Nearest)
+	end
+	VariablesTable["PlayerTeleportEnabled"] = false
+end
+
+--]
+
+--Hitbox Setting-[
+
+function SetHitboxes(Size)	
+	if Player then
+		for i,Plr in pairs(game.Players:GetChildren()) do
+			local PlrHead = GetHeadObject(Plr.Character)
+			if Plr.Character and not table.find(CharacterKillIgnore,Plr.Name) and Plr.Character.PrimaryPart and PlrHead then
+				PlrHead.Size = Size
+				PlrHead.CanCollide = false
+			end
+		end
+	end
+end
+
+--]
+
+--Light-[
+
+function ToggleLight()
+	if PlayerCharacter then
+		local PointLight = PlayerCharacter.PrimaryPart:FindFirstChildWhichIsA("PointLight")
+		if VariablesTable.LightEnabled then
+			if not PointLight then
+				local P = Instance.new("PointLight")
+				P.Parent = PlayerCharacter.PrimaryPart
+				P.Range = 25
+			end
+		else
+			if PointLight then
+				PointLight:Destroy()
+				return
+			end
+		end
+	end
+end
+
+--]
+
+for i,Button in pairs(Main:GetChildren()) do
+	if Button:IsA("TextButton") then
+		local TableIndexFound = nil
+		for i,Value in pairs(KeyMappingTable) do
+			if Value.Variable == Button.Name then
+				Value.Button = Button
+				Button.MouseButton1Click:Connect(function()
+					if not VariablesTable.SettingKeybinds.Value then
+						if Button.Name ~= "PlayerTeleportEnabled" then
+							VariablesTable[Button.Name] = not VariablesTable[Button.Name]
+							Button.TextColor3 = ((VariablesTable[Button.Name] and Color3.new(1,0,0)) or Color3.new(1,1,1))
+						end
+					end
+				end)
+				Button.MouseButton2Click:Connect(function()
+					if not VariablesTable.SettingKeybinds.Value and not VariablesTable.JetMechanicsEnabled then
+						VariablesTable.SettingKeybinds.Button = Button
+						VariablesTable.SettingKeybinds.Value = true
+						Button.Text = "Assign key."
+						Button.TextColor3 = Color3.new(1, 1, 0)
+					end
+				end)
+			end
+		end
+	end
+end
+
+function LoopKeyMaps(Input)
+	for i,Value in pairs(KeyMappingTable) do
+		if Input.Name == "InputObject" then
+			if Input.KeyCode.Name == Value.Enum.Name then
+				local Button = Value.Button
+				local Variable = Value.Variable
+				if Button and Variable then
+					if Variable ~= "PlayerTeleportEnabled" then
+						if Input.KeyCode ~= Enum.KeyCode.Underscore and Input.KeyCode ~= Enum.KeyCode.Minus then
+							VariablesTable[Variable] = not VariablesTable[Variable]
+							Button.TextColor3 = (VariablesTable[Variable] and Color3.new(1,0,0)) or Color3.new(1,1,1)
+						end
+					end
+				end
+			end
+		end
+		if Input.Name == "MouseButton1" or Input.Name == "MouseButton2" or Input.Name == "MouseButton3"  then
+			if Input == Value.Enum then				
+				local Button = Value.Button
+				local Variable = Value.Variable
+				if Button and Variable then
+					if Button.Name ~= "PlayerTeleportEnabled" then
+						VariablesTable[Variable] = not VariablesTable[Variable]
+						Button.TextColor3 = (VariablesTable[Variable] and Color3.new(1,0,0)) or Color3.new(1,1,1)
+					else
+						GetClosestPlayer()
+					end
+				end
+			end
+		end
+	end
+end
+
+function GetWallClimbing(Root)
+	local Hit = false
+	for i,Part in pairs(workspace:GetPartBoundsInBox(Root.CFrame * CFrame.new(0,1,-0.25),Vector3.new(0.5,0.5,2))) do
+		local Model = Part:FindFirstAncestorWhichIsA("Model")
+		if Model and not Model:FindFirstChild("Humanoid") then
+			if Part.CanCollide == true and Part.Transparency < 1 and Part.Size.Y > 6 then
+				Hit = true
+			end
+		elseif not Model then
+			if Part.CanCollide == true and Part.Transparency < 1 and Part.Size.Y > 6 then
+				Hit = true
+			end		
+		end
+	end
+	return Hit
+end
+
+function GetDoubleJump()
+	if Humanoid and Humanoid.FloorMaterial ~= Enum.Material.Air and VariablesTable.JumpsLeft ~= VariablesTable.JumpCount then
+		VariablesTable.JumpsLeft = VariablesTable.JumpCount
+	end
+end
+
+--JetMechanics
+
+local ScreenGUI = Instance.new("ScreenGui")
+ScreenGUI.Parent = Main.Parent
+ScreenGUI.Name = "SyndexPlaneGUI"
+ScreenGUI.Enabled = false
+local Rotator = Instance.new("Frame")
+Rotator.Name = "Rotator"
+Rotator.Size = UDim2.fromScale(0.202,0.005)
+Rotator.Position = UDim2.fromScale(0.399,0.86)
+Rotator.ZIndex = 7
+Rotator.Parent = ScreenGUI
+Rotator.BackgroundColor3 = Color3.new(1,0,0)
+Rotator.BorderSizePixel = 0
+local RotatorMarking = Instance.new("Frame")
+RotatorMarking.Name = "RotatorMarking"
+RotatorMarking.Size = UDim2.fromScale(0.202,0.005)
+RotatorMarking.Position = UDim2.fromScale(0.399,0.86)
+RotatorMarking.ZIndex = 6
+RotatorMarking.Parent = ScreenGUI
+RotatorMarking.BackgroundColor3 = Color3.new(0,0,0)
+RotatorMarking.BorderSizePixel = 0
+local Frame = Instance.new("Frame")
+Frame.Name = "Frame"
+Frame.Size = UDim2.fromScale(0.002,0.25)
+Frame.Position = UDim2.fromScale(0.499,0.651)
+Frame.ZIndex = 8
+Frame.Parent = ScreenGUI
+Frame.BackgroundColor3 = Color3.new(0, 0, 0)
+Frame.BorderSizePixel = 0
+local Altitude = Instance.new("TextLabel")
+Altitude.Name = "Altitude"
+Altitude.Size = UDim2.fromScale(0.198,0.098)
+Altitude.Position = UDim2.fromScale(0.501,0.902)
+Altitude.ZIndex = 10
+Altitude.Parent = ScreenGUI
+Altitude.BackgroundColor3 = Color3.new(0, 0, 0)
+Altitude.BackgroundTransparency = 0
+Altitude.Font = Enum.Font.SciFi
+Altitude.TextColor3 = Color3.new(1,1,1)
+Altitude.Text = "- Altitude: 0 Studs -"
+Altitude.FontFace.Weight = Enum.FontWeight.Bold
+Altitude.TextScaled = true
+local Speedometer = Instance.new("TextLabel")
+Speedometer.Name = "Speedometer"
+Speedometer.Size = UDim2.fromScale(0.198,0.098)
+Speedometer.Position = UDim2.fromScale(0.3,0.902)
+Speedometer.ZIndex = 10
+Speedometer.Parent = ScreenGUI
+Speedometer.BackgroundColor3 = Color3.new(0, 0, 0)
+Speedometer.BackgroundTransparency = 0
+Speedometer.Font = Enum.Font.SciFi
+Speedometer.TextColor3 = Color3.new(1,1,1)
+Speedometer.Text ="-0 sps-"
+Speedometer.FontFace.Weight = Enum.FontWeight.Bold
+Speedometer.TextScaled = true
+local Angle = Instance.new("TextLabel")
+Angle.Name = "Angle"
+Angle.Size = UDim2.fromScale(0.056,0.098)
+Angle.Position = UDim2.fromScale(0.471,0.813)
+Angle.ZIndex = 10
+Angle.Parent = ScreenGUI
+Angle.BackgroundColor3 = Color3.new(0, 0, 0)
+Angle.BackgroundTransparency = 0
+Angle.Font = Enum.Font.SciFi
+Angle.TextColor3 = Color3.new(1,1,1)
+Angle.Text = "0°"
+Angle.TextScaled = true
+
+local UICorner = Instance.new("UICorner")
+UICorner.Parent = Altitude
+UICorner.CornerRadius = UDim.new(0,25)
+UICorner.Name = "UICorner"
+local UICorner2 = UICorner:Clone()
+UICorner2.Parent = Speedometer
+local UICorner3 = UICorner:Clone()
+UICorner3.Parent = Angle
+
+local JetEngineSound = Instance.new("Sound")
+JetEngineSound.Volume = 0.25
+JetEngineSound.Parent = workspace
+JetEngineSound.Looped = true
+JetEngineSound.SoundId = "rbxassetid://2149981270"
+local JetEngineFullSound = Instance.new("Sound")
+JetEngineFullSound.Volume = 0.25
+JetEngineFullSound.Parent = workspace
+JetEngineFullSound.Looped = true
+JetEngineFullSound.SoundId = "rbxassetid://134024901"
+
+local Flying = false
+local Speed = 0
+
+local ZoomX = 10
+local ZoomY = 5
+
+local FlightMode = 0
+
+local FlightCameraMode = 0
+
+function SoundHandler()
+	JetEngineFullSound.PlaybackSpeed = 0.7 + Speed /600
+	if Flying and VariablesTable.JetMechanicsEnabled then
+		if not JetEngineSound.IsPlaying then
+			JetEngineSound:Play()
+			JetEngineFullSound:Play()
+		end
+	else
+		if JetEngineSound.IsPlaying then
+			JetEngineSound:Stop()
+			JetEngineFullSound:Stop()
+		end
+	end    
+end
+
+function ResetStats(Torso)
+	Flying = false
+	GameCamera.CameraType = Enum.CameraType.Custom
+	Speed = 0
+	if Torso then
+		local BV,BG = GetFlightObjects(Torso)
+		if BV and BG then
+			BV:Destroy()
+			BG:Destroy()
+		end
+		VariablesTable.LaunchPosition = Torso.Position
+	end
+	JetEngineSound:Stop()
+	JetEngineFullSound:Stop()
+end
+function GetFlightObjects(Torso)
+	if Torso:FindFirstChild("BodyVelocity") and Torso:FindFirstChild("BodyGyro") then
+		return Torso:FindFirstChild("BodyVelocity"), Torso:FindFirstChild("BodyGyro")
+	else
+		local BG = Instance.new("BodyGyro", Torso)
+		BG.P = 9e4
+		BG.maxTorque = Vector3.new(9e9, 9e9, 9e9)
+		BG.cframe = Torso.CFrame
+		local BV = Instance.new("BodyVelocity", Torso)
+		BV.velocity = Vector3.new(0,0.1,0)
+		BV.maxForce = Vector3.new(9e9, 9e9, 9e9)
+		return BV,BG
+	end
+end
+
+function GetStatus()
+	ScreenGUI.Enabled = Flying
+	local Character = Player.Character
+	if Character then
+		local Torso = Character:FindFirstChild("Torso") or Character:FindFirstChild("HumanoidRootPart")
+		if not Torso then return end
+		Altitude.Text = "- Altitude: "..tostring(math.floor(Torso.Position.Y)).." studs -"
+		Rotator.Rotation = math.deg(math.atan2(Torso.CFrame.RightVector.Y, Torso.CFrame.UpVector.Y))
+		Angle.Text = math.floor(tostring(Rotator.Rotation)).."°"
+		Speedometer.Text = tostring(math.floor(Torso.Velocity.Magnitude)).." sps"
+	end
+end
+
+function Fly()
+	local Character = Player.Character
+	if Character then
+		local Torso = Character:FindFirstChild("HumanoidRootPart") or Character:FindFirstChild("Torso")
+		if Torso and Character:FindFirstChild("Humanoid") then
+			if Character.Humanoid.Sit ~= false then
+				local RotationLR = 2
+				local RotationUD = 2
+				if Speed > 200 and Speed <= 500 then
+					RotationLR = 2.5
+					RotationUD = 2.5
+				elseif Speed > 500 then
+					RotationLR = 3
+					RotationUD = 3
+				end
+				local BV,BG = GetFlightObjects(Torso)
+				GameCamera.CameraType = FlightCameraMode == 0 and Enum.CameraType.Scriptable or Enum.CameraType.Custom
+				if FlightCameraMode == 0 then
+					GameCamera.CFrame = Character.PrimaryPart.CFrame * CFrame.new(0,ZoomY,ZoomX)
+				end
+				--CameraControlling
+				if InputService:IsKeyDown(Enum.KeyCode.O) then
+					ZoomX = ZoomX + 1
+				end
+				if InputService:IsKeyDown(Enum.KeyCode.I) and ZoomX > 0 then
+					ZoomX = ZoomX - 1
+				end
+				if InputService:IsKeyDown(Enum.KeyCode.L) then
+					ZoomY = ZoomY + 1
+				end
+				if InputService:IsKeyDown(Enum.KeyCode.K) and ZoomY > 0 then
+					ZoomY = ZoomY - 1
+				end
+				if FlightMode == 1 then
+					BG.P = 9e4
+					if InputService:IsKeyDown(Enum.KeyCode.Up) then
+						Character:PivotTo(Character.PrimaryPart.CFrame * CFrame.Angles(math.rad(-RotationUD),0,0))
+					end
+					if InputService:IsKeyDown(Enum.KeyCode.Down) then
+						Character:PivotTo(Character.PrimaryPart.CFrame * CFrame.Angles(math.rad(RotationUD),0,0))
+					end
+					if InputService:IsKeyDown(Enum.KeyCode.Left) then
+						Character:PivotTo(Character.PrimaryPart.CFrame * CFrame.Angles(0,0,math.rad(RotationUD)))
+					end
+					if InputService:IsKeyDown(Enum.KeyCode.Right) then
+						Character:PivotTo(Character.PrimaryPart.CFrame * CFrame.Angles(0,0,math.rad(-RotationUD)))
+					end
+					if InputService:IsKeyDown(Enum.KeyCode.W) and Speed < 500 then
+						Speed = Speed + 0.25
+					end
+					if InputService:IsKeyDown(Enum.KeyCode.S) and Speed > 20 then
+						Speed = Speed - 0.25
+						if Speed < 25 then
+							Speed = 25 
+						end    
+					end
+					if InputService:IsKeyDown(Enum.KeyCode.LeftShift) and Speed < 500 then
+						Speed = Speed + 5
+					end
+					if InputService:IsKeyDown(Enum.KeyCode.LeftControl) and Speed > 25 then
+						Speed = Speed - 5
+					end
+					if Speed > 500 and not InputService:IsKeyDown(Enum.KeyCode.E) then
+						if Speed - 500 > 250 then
+							Speed = Speed - 5
+						else
+							Speed = 500
+						end    
+					end
+					if InputService:IsKeyDown(Enum.KeyCode.E) and Speed < VariablesTable.MaxBoostSpeed then
+						Speed = Speed + 10
+						if Speed > VariablesTable.MaxBoostSpeed then
+							Speed = VariablesTable.MaxBoostSpeed 
+						end    
+					end
+					if Speed < 25 then
+						Speed = 25
+					end
+					--Main Flight
+					if InputService:IsKeyDown(Enum.KeyCode.D) then
+						Character:PivotTo(Character.PrimaryPart.CFrame * CFrame.Angles(0,math.rad(-RotationLR),0))
+					end
+					if InputService:IsKeyDown(Enum.KeyCode.A) then
+						Character:PivotTo(Character.PrimaryPart.CFrame * CFrame.Angles(0,math.rad(RotationLR),0))
+					end
+					BV.Velocity = Character.PrimaryPart.CFrame.lookVector * Speed
+					BG.CFrame = Character.PrimaryPart.CFrame
+
+				else
+					Speed = 0
+					local VectorY = Vector3.new(0,0,0)
+					local RightVector = Vector3.new(0,0,0)
+					local ForwardVector = Vector3.new(0,0,0)
+					local RotationY = Character.PrimaryPart.CFrame.Rotation.Y
+					if InputService:IsKeyDown(Enum.KeyCode.E) then
+						VectorY = Vector3.new(0,25,0)
+					elseif InputService:IsKeyDown(Enum.KeyCode.Q) then
+						VectorY = Vector3.new(0,-25,0)
+					end
+					if InputService:IsKeyDown(Enum.KeyCode.W) then
+						ForwardVector = Character.PrimaryPart.CFrame.lookVector * 25
+					end	
+					if InputService:IsKeyDown(Enum.KeyCode.S) then
+						ForwardVector = Character.PrimaryPart.CFrame.lookVector * -25
+					end	
+					if InputService:IsKeyDown(Enum.KeyCode.D) then
+						RightVector = Character.PrimaryPart.CFrame.RightVector * 25
+					end	
+					if InputService:IsKeyDown(Enum.KeyCode.A) then
+						RightVector = Character.PrimaryPart.CFrame.RightVector * -25
+					end
+
+					BV.Velocity = RightVector + ForwardVector + VectorY
+					if VariablesTable.GPSLocator then
+						if VariablesTable.LaunchPosition then
+							local ForwardVector = (VariablesTable.LaunchPosition - Player.Character.PrimaryPart.Position).Unit
+							local RightVector =  ForwardVector:Cross(Vector3.new(0,1,0))
+							BG.P = 1000
+							BG.CFrame = CFrame.fromMatrix(Character.PrimaryPart.Position,RightVector,Vector3.new(0,1,0))
+						end
+					else
+						if InputService:IsKeyDown(Enum.KeyCode.Left) then
+							Character:PivotTo(Character.PrimaryPart.CFrame * CFrame.Angles(0,math.rad(RotationLR),0))
+						elseif InputService:IsKeyDown(Enum.KeyCode.Right) then
+							Character:PivotTo(Character.PrimaryPart.CFrame * CFrame.Angles(0,math.rad(-RotationLR),0))
+						end						
+						if Character.PrimaryPart.Orientation.X == 0 and Character.PrimaryPart.Orientation.Z == 0 then
+							BG.P = 9e4
+							BG.CFrame = Character.PrimaryPart.CFrame
+						else
+							BG.P = 1000
+							BG.CFrame = CFrame.new(Character.PrimaryPart.CFrame.Position) * CFrame.Angles(0,math.rad(Character.PrimaryPart.Orientation.Y),0)
+						end
+					end
+				end
+			else
+				ResetStats(Torso)
+			end
+		else
+			ResetStats(Torso)
+		end
+	else
+		ResetStats(nil)
+	end
+end
+
+local AntiGrief = false
+
+local JetObjectsCanCollideTurnedOff = {}
+
+
+function CollisionEvading()
+	if AntiGrief == true then
+		local Character = Player.Character
+		if Character then
+			local Humanoid = Character:FindFirstChild("Humanoid")
+			local Jet = Humanoid.SeatPart:FindFirstAncestorWhichIsA("Model")
+			if Humanoid and Jet then
+				local Origin = Character.PrimaryPart.CFrame
+				local BoundCast = workspace:GetPartBoundsInBox(Origin,Vector3.new(200,100,200))
+				for i,Part in pairs(BoundCast) do
+					if not Part:IsDescendantOf(Character) and not Part:IsDescendantOf(Jet) then
+						if Part.CanCollide == true and not table.find(JetObjectsCanCollideTurnedOff,Part) then
+							Part.CanCollide = false
+							table.insert(JetObjectsCanCollideTurnedOff,Part)
+						end    
+					end
+				end    
+			end        
+		end
+	elseif #JetObjectsCanCollideTurnedOff > 0 then
+		for i,Part in pairs(JetObjectsCanCollideTurnedOff) do
+			if Part then
+				Part.CanCollide = true 
+				table.remove(JetObjectsCanCollideTurnedOff,table.find(JetObjectsCanCollideTurnedOff,Part))
+			end
+		end
+	end
+end    
+
+function AntiGriefHandler()
+
+	if not Flying or not VariablesTable.JetMechanicsEnabled and AntiGrief then
+		AntiGrief = false
+	end
+	CollisionEvading()
+end
+
+function FlyMain()
+	if Flying then
+		Fly()
+	end
+	local Character = Player.Character
+	if Character and Character:FindFirstChild("Humanoid") then
+		local Torso = Character:FindFirstChild("HumanoidRootPart") or Character:FindFirstChild("Torso")
+		if Torso and Character.Humanoid.Sit == true then
+			local SeatPart = Character.Humanoid.SeatPart
+			if SeatPart and SeatPart.HeadsUpDisplay then
+				SeatPart.HeadsUpDisplay = false
+			end
+		end	
+	end			
+	GetStatus()
+	SoundHandler()
+	AntiGriefHandler()
+end
+
+InputService.InputBegan:Connect(function(Input,GPE)
+	if not GPE then
+		if VariablesTable.InfiniteJumpEnabled then 
+			if PlayerCharacter and Humanoid and Input.KeyCode == Enum.KeyCode.Space and Humanoid.Health > 0.1 then
+				repeat
+					Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+					task.wait()
+				until not Humanoid or Humanoid.Health <= 0.1 or not InputService:IsKeyDown(Enum.KeyCode.Space)
+			end			
+		end
+		if PlayerCharacter and Humanoid then
+			local Root = PlayerCharacter:FindFirstChild("HumanoidRootPart")
+			if Root and Root.Anchored == false then
+				if Humanoid.FloorMaterial == Enum.Material.Air then
+					if (KeyMappingTable.WallClimbEnabled.Enum == Input.KeyCode or Input.UserInputType == KeyMappingTable.WallClimbEnabled.Enum) and GetWallClimbing(Root) then
+						Root.Anchored = true
+						return
+					end
+					if VariablesTable.DoubleJumpEnabled and VariablesTable.JumpCount > 0 and VariablesTable.JumpsLeft > 0 and Input.KeyCode == Enum.KeyCode.Space then
+						VariablesTable.JumpsLeft = VariablesTable.JumpsLeft - 1
+						for i = 0,3 do
+							Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+							task.wait()
+						end
+					end
+				end
+			end
+			if Root and Root.Anchored == true then
+				if Input.KeyCode == Enum.KeyCode.Space and Humanoid and PlayerCharacter then
+					Root.Anchored = false
+					for i = 0,5 do
+						Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+						task.wait()
+					end
+				end				
+			end
+		end
+		if Input.KeyCode == Enum.KeyCode.Delete then
+			Gui.Enabled = not Gui.Enabled
+		end
+		if not VariablesTable.JetMechanicsEnabled then
+			if Input.KeyCode == KeyMappingTable.PlayerTeleportEnabled.Enum then
+				GetClosestPlayer()
+			end
+			if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+				if VariablesTable.SettingKeybinds.Value == true then
+					local Button = VariablesTable.SettingKeybinds.Button
+					KeyMappingTable[Button.Name].Enum = Enum.UserInputType.MouseButton1
+					Button.Text = KeyMappingTable[Button.Name].ObjectTag.."Mouse Left"
+					Button.TextColor3 = (VariablesTable[Button.Name] and Color3.new(1,0,0)) or Color3.new(1,1,1)
+					VariablesTable.SettingKeybinds.Value = false
+				else
+					LoopKeyMaps(Enum.UserInputType.MouseButton1)
+				end
+			elseif Input.UserInputType == Enum.UserInputType.MouseButton2 then
+				if VariablesTable.SettingKeybinds.Value == true then
+					local Button = VariablesTable.SettingKeybinds.Button
+					KeyMappingTable[Button.Name].Enum = Enum.UserInputType.MouseButton2
+					Button.Text = KeyMappingTable[Button.Name].ObjectTag.."Mouse Right"
+					Button.TextColor3 = (VariablesTable[Button.Name] and Color3.new(1,0,0)) or Color3.new(1,1,1)
+					VariablesTable.SettingKeybinds.Value = false
+				else
+					LoopKeyMaps(Enum.UserInputType.MouseButton2)
+				end
+			elseif Input.UserInputType == Enum.UserInputType.MouseButton3 then
+				if VariablesTable.SettingKeybinds.Value == true then
+					local Button = VariablesTable.SettingKeybinds.Button
+					KeyMappingTable[Button.Name].Enum = Enum.UserInputType.MouseButton3
+					Button.Text = KeyMappingTable[Button.Name].ObjectTag.."Mouse Wheel"
+					Button.TextColor3 = (VariablesTable[Button.Name] and Color3.new(1,0,0)) or Color3.new(1,1,1)
+					VariablesTable.SettingKeybinds.Value = false
+				else
+					LoopKeyMaps(Enum.UserInputType.MouseButton3)
+				end
+			else
+				if VariablesTable.SettingKeybinds.Value == true then
+					local Button = VariablesTable.SettingKeybinds.Button
+					KeyMappingTable[Button.Name].Enum = Input.KeyCode
+					Button.Text = KeyMappingTable[Button.Name].ObjectTag..Input.KeyCode.Name
+					Button.TextColor3 = (VariablesTable[Button.Name] and Color3.new(1,0,0)) or Color3.new(1,1,1)
+					VariablesTable.SettingKeybinds.Value = false
+				else
+					LoopKeyMaps(Input)
+				end
+			end
+		else
+			if Input.KeyCode == Enum.KeyCode.F and InputService:IsKeyDown(Enum.KeyCode.P) then
+				local Character = Player.Character
+				if Character and Character:FindFirstChild("Humanoid") then
+					local Torso = Character:FindFirstChild("HumanoidRootPart") or Character:FindFirstChild("Torso")
+					if Torso and Character.Humanoid.Sit == true then
+						Flying = not Flying
+						local BV,BG = GetFlightObjects(Torso)
+						if not Flying or not VariablesTable.JetMechanicsEnabled then
+							ResetStats(Torso)
+						else
+							FlightMode = 0
+						end
+						VariablesTable.LaunchPosition = Torso.Position
+					end
+				end
+			end
+			if Flying then
+				if Input.KeyCode == Enum.KeyCode.C then
+					FlightCameraMode  = FlightCameraMode + 1
+					if FlightCameraMode > 1 then
+						FlightCameraMode = 0
+					end
+				end
+				if Input.KeyCode == Enum.KeyCode.G then
+					FlightMode  = FlightMode + 1
+					if FlightMode > 1 then
+						FlightMode = 0
+					end
+					if FlightMode == 1 then
+						Speed = 100
+					end
+				end
+			end
+		end
+	end
+end)
+
+--]
+
+Mouse.Button2Down:Connect(function()
+	if VariablesTable.AutoaimEnabled == true then
+		AutoAimTargets()
+	end
+end)
+
+function GetClosestMark(Position)
+	local Head = GetHeadObject(PlayerCharacter)
+	if Head then
+		local PositionA = (Head.CFrame * CFrame.new(-4,0,0)).Position
+		local PositionB = (Head.CFrame * CFrame.new(4,0,0)).Position
+		if (PositionA - Position).Magnitude == (PositionB - Position).Magnitude then
+			return CFrame.new(-4,0,0)
+		elseif (PositionA - Position).Magnitude > (PositionB - Position).Magnitude then
+			return CFrame.new(-4,0,0)
+		else
+			return CFrame.new(4,0,0)
+		end
+	else
+		return CFrame.new(-4,0,0)
+	end
+end
+
+local HideCFrame = nil
+
+function FixDetectionIssues()
+	local Target = Mouse.Target
+	if Target then
+		local Model = Target:FindFirstAncestorWhichIsA("Model")
+		if Model and Model:FindFirstChildWhichIsA("Humanoid") and Model ~= workspace then
+			local ModelPlayer = game.Players:GetPlayerFromCharacter(Model)
+			if ModelPlayer then
+				if table.find(CharacterKillIgnore,ModelPlayer.Name) then
+					GameCamera.CFrame = CFrame.lookAt(GetHeadObject(PlayerCharacter).Position,(Model.PrimaryPart.CFrame * CFrame.new(4,0,0)).Position,Vector3.new(0,1,0))
+				end
+			end
+		end
+	end
+	--Enemy target sensing
+	if VariablesTable.ScanViewsEnabled then
+		if not HideCFrame then
+			Humanoid:UnequipTools()
+			HideCFrame = PlayerCharacter.PrimaryPart.CFrame
+			PlayerCharacter:MoveTo(HideCFrame.Position * Vector3.new(0,-15,0))
+			task.wait(0.25)
+			PlayerCharacter.PrimaryPart.Anchored = true
+		end
+	else
+		if HideCFrame then
+			PlayerCharacter.PrimaryPart.Anchored = false
+			task.wait(0.25)
+			PlayerCharacter:MoveTo(HideCFrame.Position)
+			HideCFrame = nil
+		end
+	end
+end
+
+local Truss = nil
+local CanPlaceTruss = true
+
+function GetClimb()
+	local Root = PlayerCharacter:FindFirstChild("HumanoidRootPart")
+	if Root and VariablesTable.SurfaceClimbEnabled then
+		if GetWallClimbing(Root) then
+			if not InputService:IsKeyDown(Enum.KeyCode.Space) then
+				if Truss then
+					if math.abs(Truss.Position.Y - Root.Position.Y) > 4 then
+						Truss.CFrame = Root.CFrame * CFrame.new(0,0,-1.5)
+					end
+				elseif CanPlaceTruss then
+					Truss = Instance.new("TrussPart")
+					Truss.CFrame = Root.CFrame * CFrame.new(0,0,-1.5)
+					Truss.Parent = workspace
+					Truss.Name = "Truss"
+					Truss.Anchored = true
+					Truss.Transparency = 1
+					Truss.Size = Vector3.new(2,6,2)
+				end
+			elseif Truss then
+				Truss:Destroy()
+				Truss = nil
+				CanPlaceTruss = false
+				for i = 0,8 do
+					Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+					task.wait()
+				end
+				CanPlaceTruss = true
+			end
+		elseif Truss then
+			Truss:Destroy()
+			Truss = nil
+			CanPlaceTruss = false
+			for i = 0,8 do
+				Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+				task.wait()
+			end
+			CanPlaceTruss = true
+		end
+	elseif Truss then
+		Truss:Destroy()
+		Truss = nil
+	end
+end
+
+RunService.RenderStepped:Connect(function()
+	PlayerCharacter,Humanoid = GetCharacterData(true)
+	FlyMain()
+	if PlayerCharacter and Humanoid then
+		GetClimb()
+		GetDoubleJump()
+		if VariablesTable.WalkSpeedOverwrite then
+			if InputService:IsKeyDown(Enum.KeyCode.LeftShift) then
+				if Humanoid.WalkSpeed ~= VariablesTable.RunSpeed then
+					Humanoid.WalkSpeed = VariablesTable.RunSpeed
+				end
+			else
+				if Humanoid.WalkSpeed ~= VariablesTable.WalkSpeed then
+					Humanoid.WalkSpeed = VariablesTable.WalkSpeed
+				end
+			end
+		end
+		if VariablesTable.HighlightEnabled == true then
+			LoopPlayers()
+		elseif HighlightClearEnabled then
+			ClearTable()
+			HighlightClearEnabled = false
+		end
+		if VariablesTable.NoclipEnabled == true then
+			SetCollisions()
+		elseif NocLipClearEnabled then
+			for i,Part in pairs(ClipTable) do
+				Part.CanCollide = true
+				table.remove(ClipTable,table.find(ClipTable,Part))
+			end
+			NocLipClearEnabled = false
+		end
+		if VariablesTable.HitboxEnabled then
+			if not HitboxClearEnabled then
+				HitboxClearEnabled = true
+			end
+			SetHitboxes(Vector3.new(1,1,1)*3)
+		elseif HitboxClearEnabled then
+			SetHitboxes(Vector3.new(1,1,1))
+			HitboxClearEnabled = false
+		end
+		ToggleLight()
+		if VariablesTable.AutoaimEnabled == true then
+			FixDetectionIssues()        
+		end
+	end
+end)
