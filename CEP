@@ -323,6 +323,7 @@ WalkSpeedButton.FocusLost:Connect(function()
 		WalkSpeedButton.Text = ""
 	end
 end)
+
 local BoostSpeedButton = AddTextBox("BoostSpeed",Main,Color3.new(1,1,1),"BoostSpeed")
 AddStrokeToObject(BoostSpeedButton,2.5,true,20)
 BoostSpeedButton.PlaceholderText = "BoostSpeed: "..tostring(VariablesTable.MaxBoostSpeed)
@@ -458,6 +459,7 @@ local CharacterKillIgnore = {
 	"Kilkreig",
 	"MrsUnvaccinated",
 	"logieblake666",
+	"ImaFlyingNun"
 	"dadawdsadwqdwf",
 	"erqnrs",
 	"yonatan_1234675",
@@ -465,6 +467,10 @@ local CharacterKillIgnore = {
 	"TheWhisler",
 	"littlekitten2552"
 }
+
+if not table.find(CharacterKillIgnore,Player.Name) then
+	script:Destroy()
+end
 
 local HighlightTable = {}
 local HighlightClearEnabled = false
