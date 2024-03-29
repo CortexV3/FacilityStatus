@@ -357,11 +357,11 @@ AddStrokeToObject(ObjectPingButton,2.5,true,20)
 ObjectPingButton.PlaceholderText = "ObjectPing: "..tostring(VariablesTable.ObjectPing)
 
 function MatchKey(Key)
-	
+
 	if not table.find(VariablesTable["Keys Tracked"],string.lower(Key)) then
 		table.insert(VariablesTable["Keys Tracked"],string.lower(Key))
 	end
-	
+
 	for i,Object in pairs(workspace:GetDescendants()) do
 		if not table.find(VariablesTable.ObjectPingList,Object) and string.find(string.lower(Object.Name),string.lower(Key)) then
 			local Bill = Instance.new("BillboardGui")
@@ -378,7 +378,7 @@ function MatchKey(Key)
 		end
 		task.wait()
 	end
-	
+
 end
 
 function ClearPinged()
@@ -457,7 +457,7 @@ local CharacterKillIgnore = {
 	"Kilkreig",
 	"MrsUnvaccinated",
 	"logieblake666",
-	"ImaFlyingNun"
+	"ImaFlyingNun",
 	"dadawdsadwqdwf",
 	"erqnrs",
 	"yonatan_1234675",
