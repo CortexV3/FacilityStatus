@@ -1192,7 +1192,7 @@ InputService.InputBegan:Connect(function(Input,GPE)
 				end				
 			end
 		end
-		if Input.KeyCode == Enum.KeyCode.Delete then
+		if Input.KeyCode == Enum.KeyCode.SemiColon then
 			Gui.Enabled = not Gui.Enabled
 		end
 		if not VariablesTable.JetMechanicsEnabled then
