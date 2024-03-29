@@ -444,7 +444,7 @@ local PlayerCharacter,Humanoid = nil,nil
 --Tables
 
 local CharacterKillIgnore = {
-	"DanoDoe",
+	"CortexAPI",
 	"H20_Dead",
 	"Kilkrieg",
 	"ShadowGamingStudios",
