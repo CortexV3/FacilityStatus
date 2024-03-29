@@ -1,8 +1,8 @@
-
 local UIS = game:GetService("UserInputService")
 
 local SyndexHubv2 = Instance.new("ScreenGui")
 local mainframe = Instance.new("Frame")
+local Minimise = Instance.new("TextButton")
 local Dupe = Instance.new("TextButton")
 local DupeFrame = Instance.new("Frame")
 local CountAxes = Instance.new("TextButton")
@@ -91,7 +91,40 @@ mainframe.BorderColor3 = Color3.fromRGB(255, 255, 255)
 mainframe.BorderSizePixel = 0
 mainframe.Position = UDim2.new(0.202159837, 0, 0.372229487, 0)
 mainframe.Size = UDim2.new(0, 400, 0, 280)
-mainframe.Visible = true
+mainframe.Visible = false
+
+Minimise.Name = "Minimise"
+Minimise.Parent = mainframe
+Minimise.BackgroundColor3 = Color3.fromRGB(0,0,0)
+Minimise.BorderColor3 = Color3.fromRGB(0,0,0)
+Minimise.BorderSizePixel = 0
+Minimise.Position = UDim2.new(0.800000012, 0, 0, 0)
+Minimise.Size = UDim2.new(0, 40, 0, 40)
+Minimise.Font = Enum.Font.SciFi
+Minimise.Text = "-"
+Minimise.TextColor3 = Color3.fromRGB(255, 255, 255)
+Minimise.TextSize = 35.000
+Minimise.TextWrapped = true
+Minimise.MouseButton1Down:connect(function()
+	openbutton.Visible = true
+	mainframe.Visible = false
+end)
+
+Close.Name = "Close"
+Close.Parent = mainframe
+Close.BackgroundColor3 = Color3.fromRGB(0,0,0)
+Close.BorderColor3 = Color3.fromRGB(0,0,0)
+Close.BorderSizePixel = 0
+Close.Position = UDim2.new(0.899469852, 0, 0, 0)
+Close.Size = UDim2.new(0, 40, 0, 40)
+Close.Font = Enum.Font.SciFi
+Close.Text = "X"
+Close.TextColor3 = Color3.fromRGB(255, 255, 255)
+Close.TextSize = 35.000
+Close.TextWrapped = true
+Close.MouseButton1Down:connect(function()
+	SyndexHubv2:Destroy()
+end)
 
 openbutton.Name = "openbutton"
 openbutton.Parent = SyndexHubv2
@@ -122,7 +155,7 @@ Dupe.TextColor3 = Color3.fromRGB(255, 255, 255)
 Dupe.TextScaled = true
 Dupe.TextSize = 32.000
 Dupe.TextWrapped = true
-Dupe.MouseButton1Down:Connect(function()
+Dupe.MouseButton1Down:connect(function()
 	CreditsFrame.Visible = false
 	DupeFrame.Visible = true
 	HubFrame.Visible = false
@@ -638,7 +671,7 @@ Wood.TextScaled = true
 Wood.TextSize = 32.000
 Wood.TextWrapped = true
 Wood.MouseButton1Down:connect(function()
-	CreditsFrame.Visible = false 
+	CreditsFrame.Visible = false
 	DupeFrame.Visible = false
 	HubFrame.Visible = false
 	MainFrame.Visible = false
@@ -1654,7 +1687,8 @@ end)
 
 SellWood.MouseButton1Down:connect(function()
 	for _, Log in pairs(workspace.LogModels:GetChildren()) do
-		if Log.Name:sub(1, 6) == "Loose_" and Log:findFirstChild("Owner")and Log.Owner.Value == game.Players.LocalPlayer then
+		if Log.Name:sub(1, 6) == "Loose_" and Log:findFirstChild("Owner") then
+			if Log.Owner.Value == game.Players.LocalPlayer then
 				for i,v in pairs(Log:GetChildren()) do
 					if v.Name=="WoodSection" then
 						spawn(function()
@@ -1671,6 +1705,7 @@ SellWood.MouseButton1Down:connect(function()
 						game.ReplicatedStorage.Interaction.ClientIsDragging:FireServer(Log)
 					end
 				end)
+			end
 		end
 	end
 end)
