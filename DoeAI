@@ -5,7 +5,8 @@ local SleepEnabled = false
 local Enabled = true
 
 local PList = game.Players:GetChildren()
-local AuthorizedPlayer = game.Players:FindFirstChild("MrsUnvaccinated").Name or PList[math.random(1,#PList)].Name
+local AuthorizedPlayer = (game.Players:FindFirstChild("MrsUnvaccinated") and game.Players:FindFirstChild("MrsUnvaccinated").Name) or PList[math.random(1,#PList)].Name
+
 function Chat(MSG)
 	local args = {[1] = MSG,[2] = "All"}
 	game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(unpack(args))
@@ -73,7 +74,7 @@ function RayCast2()
 	local r = RaycastParams.new()
 	r.FilterDescendantsInstances = {Player.Character,Ignore}
 	r.FilterType = Enum.RaycastFilterType.Blacklist
-	local Result = game.Workspace:Raycast(O,Dr,r)
+	local Result = workspace:Raycast(O,Dr,r)
 	if Result then
 		if Result.Instance:IsDescendantOf(MU.Character) then
 			return true
@@ -425,8 +426,9 @@ end)
 while Enabled do
 
 	if not MU or (MU and MU ~= "MrsUnvaccinated" and game.Players:FindFirstChild("MrsUnvacinated")) then
-		local AuthorizedPlayer = game.Players:FindFirstChild("MrsUnvaccinated").Name or PList[math.random(1,#PList)].Name
-		MU = game.Players[AuthorizedPlayer]
+		PList = game.Players:GetChildren()
+		AuthorizedPlayer = (game.Players:FindFirstChild("MrsUnvaccinated") and game.Players:FindFirstChild("MrsUnvaccinated").Name) or PList[math.random(1,#PList)].Name
+		MU = game.Players:FindFirstChild(AuthorizedPlayer)
 	else
 		pcall(function()
 		        if SleepEnabled then
