@@ -1,0 +1,523 @@
+
+repeat task.wait() until game.Loaded
+local Player = game.Players.LocalPlayer
+local SleepEnabled = false
+local Enabled = true
+
+function Chat(MSG)
+	local args = {[1] = MSG,[2] = "All"}
+	game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(unpack(args))
+    SleepEnabled = false
+end
+local ElapsedAFKTime = 0
+local DoeVersion = "Doe V3"
+Chat(DoeVersion.." Startup: Game is loaded.")
+task.wait(1)
+Chat(DoeVersion.." Startup: Awaiting authorized player [MrsUnvaccinated]")
+repeat task.wait() until game.Players:FindFirstChild("MrsUnvaccinated")
+Chat(DoeVersion.." Startup: MrsUnvaccinated has joined in.")
+task.wait(5)
+Chat(DoeVersion.." Startup: Waiting for authorized player character")
+
+local MU = game.Players.MrsUnvaccinated
+local Ignore = {}
+local ToolBox = Player:FindFirstChild("Backpack")
+local LastObstruction = nil
+local PiggyBackEnabled = false
+local PartMember = nil
+function GetTools()
+	pcall(function()
+		local PTool = Player.Character:FindFirstChildWhichIsA("Tool")
+		local MTool = MU.Character:FindFirstChildWhichIsA("Tool")
+		if PTool then
+			if MTool then
+				if MTool.Name ~= PTool.Name then
+					Player.Character.Humanoid:UnequipTools()
+					Player.Character.Humanoid:EquipTool(ToolBox:FindFirstChild(MTool.Name)) 
+				end
+			else
+				Player.Character.Humanoid:UnequipTools()
+			end
+		elseif MTool then
+			Player.Character.Humanoid:EquipTool(ToolBox:FindFirstChild(MTool.Name))
+		end
+	end)
+end
+
+function RayCast()
+	local O = Player.Character:FindFirstChild("Head").Position
+	local Dst = MU.Character:FindFirstChild("Head").Position
+	local Dr = (Dst - O)
+	local r = RaycastParams.new()
+	r.FilterDescendantsInstances = {Player.Character,Ignore}
+	r.FilterType = Enum.RaycastFilterType.Blacklist
+	local Result = game.Workspace:Raycast(O,Dr,r)
+	if Result then
+		if Result.Instance:IsDescendantOf(MU.Character) then
+			return true
+		elseif Result.Instance.CanCollide == false then
+			Result.Instance:Destroy()
+		else
+			LastObstruction = Result
+            PartMember = Result.Instance:FindFirstAncestorWhichIsA("Model")
+			return false
+		end
+	end
+end
+function RayCast2()
+	local O = Player.Character.PrimaryPart.Position
+	local Dst = MU.Character.PrimaryPart.Position
+	local Dr = (Dst - O)
+	local r = RaycastParams.new()
+	r.FilterDescendantsInstances = {Player.Character,Ignore}
+	r.FilterType = Enum.RaycastFilterType.Blacklist
+	local Result = game.Workspace:Raycast(O,Dr,r)
+	if Result then
+		if Result.Instance:IsDescendantOf(MU.Character) then
+			return true
+		elseif Result.Instance.CanCollide == false then
+			Result.Instance:Destroy()
+		else
+			LastObstruction = Result
+            PartMember = Result.Instance:FindFirstAncestorWhichIsA("Model")
+			return false
+		end
+	end
+end
+function LookAt()
+	local ForwardVector = (MU.Character.PrimaryPart.Position - Player.Character.PrimaryPart.Position).Unit
+	local RightVector =  ForwardVector:Cross(Vector3.new(0,1,0))
+	for i = 0,1,0.1 do
+		task.wait()
+		Player.Character:PivotTo(Player.Character.PrimaryPart.CFrame:Lerp(CFrame.fromMatrix(Player.Character.PrimaryPart.Position,RightVector,Vector3.new(0,1,0)),i))
+	end
+end
+
+function GetDistance()
+	return (Player.Character.PrimaryPart.Position - MU.Character.PrimaryPart.Position).Magnitude
+end
+function GetY()
+	if Player.Character.Humanoid:GetState() ~= Enum.HumanoidStateType.Climbing then
+		local SeeHead = RayCast()
+		local SeeTorso = RayCast2()
+        if GetDistance() < 2 then
+            return false
+        end
+		if (SeeHead and not SeeTorso) then
+			return true
+		end
+		if not SeeHead and not SeeTorso then
+			local Found = false
+			for i = 0,3,1 do
+				if not RayCast and not Found and not PiggyBackEnabled then
+					Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping,true)
+					ClimbLadder()
+					repeat task.wait() until Player.Character.Humanoid.FloorMaterial ~= Enum.Material.Air
+				else
+					Found = true
+				end
+			end
+			if not Found then
+				Player.Character:PivotTo(MU.Character.PrimaryPart.CFrame)
+				return false
+			end
+		end
+		if SeeHead and SeeTorso then
+			if math.floor(MU.Character.PrimaryPart.Position.Y - Player.Character.PrimaryPart.Position.Y) < 2 then
+				return false
+			else
+				return true
+			end
+		end
+	end
+end
+
+function WalkTo(OFF)
+	local Goal = MU.Character.PrimaryPart.CFrame * CFrame.new(0,0,OFF)
+	Player.Character.Humanoid:MoveTo(Goal.Position) 
+end  
+
+function ClimbLadder()
+	local Goal = Player.Character.PrimaryPart.CFrame * CFrame.new(0,0,-10)
+	Player.Character.Humanoid:MoveTo(Goal.Position) 
+end
+local Follow = true
+local Process = false
+local Lookatmu = true
+local Question = ""
+local GetToolsCopy = true
+
+-----Chat Commands
+
+function Help()
+	Chat("Current available commands: ActObjectInfo,ActPiggyback,ActToolCopy,ActSee ActComeTo ActSit ActCheckView ActCheckView ActStand ActFollow ActLook ActHelp ActStatus ActSleep ActWake")
+end
+
+local LastMessageTheme = ""
+
+function AskWellbeing()
+    local ResponsesName = {", Friend.","."}
+    local Responses = {"I am doing alright","I am well","I am good"}
+    if math.random(1,5) >= 3 then
+        if LastMessageTheme ~= "" then
+            Chat(Responses[math.random(1,#Responses)]..ResponsesName[math.random(1,#ResponsesName)].." How are you doing, Friend?")
+        else
+            Chat(" How are you doing, Friend?")
+        end
+        LastMessageTheme = "Wellbeing"
+    elseif LastMessageTheme == "Directed" then
+        Chat(Responses[math.random(1,#Responses)]..ResponsesName[math.random(1,#ResponsesName)])
+        LastMessageTheme = "Directed"
+    end
+end
+
+local TextChatService,ChatServiceTab = game.ReplicatedStorage:FindFirstChild("DefaultChatSystemChatEvents"),nil
+if TextChatService then
+	local MessageRemote = TextChatService:FindFirstChild("OnMessageDoneFiltering")
+	if MessageRemote then
+		ChatServiceTab = MessageRemote.OnClientEvent:Connect(function(Uwu)
+			local Speaker = Uwu.FromSpeaker
+			local Message = string.lower(Uwu.Message)
+			if Speaker == "MrsUnvaccinated" and not Process and Player.Character and game.Players:FindFirstChild("MrsUnvaccinated") then
+	            if ElapsedAFKTime > 100 then
+                    Chat("Glad to see you have returned, Friend!")
+                end
+                ElapsedAFKTime = 0
+                if string.match(Message,"actfollow") then
+					Follow = not Follow
+					Chat("Following is now set to "..tostring(Follow)..".")
+				end
+				if string.match(Message,"acttoolcopy") then
+					GetToolsCopy = not GetToolsCopy
+					Chat("Tool Copy is now set to "..tostring(GetToolsCopy)..".")
+				end
+                if LastMessageTheme == "Wellbeing" then
+                    local Positives = {"ok",}
+                    local Negatives = {"sad","bad"}
+                    local AnswerType = ""
+                    for i,Word in pairs(Positives) do
+                        if string.match(Message,Word) and AnswerType == "" and not string.match(Message, "not well") and not string.match(Message, "not good") then
+                            AnswerType = "Positive"
+                        end
+                    end
+                    for i,Word in pairs(Negatives) do
+                        if string.match(Message,Word) and AnswerType == "" then
+                            AnswerType = "Negative"
+                        end
+                    end
+                    if AnswerType == "Positive" then
+                        Chat("That is good to hear, Friend!")
+                    elseif AnswerType == "Negative" then
+                        Chat("I am sorry to hear that you aren't alright.")
+                    end
+                    LastMessageTheme = "Directed"
+                end
+
+                if Message == "doe?" or Message == "doey?" then
+                    local Responses = {", Friend?","?"}
+                    Chat("Yes"..Responses[math.random(1,#Responses)])
+                    LastMessageTheme = "Directed"
+                end
+                if (string.match(Message,"doe?") or string.match(Message,"doey?")) and (string.match(Message,"how are doing") or string.match(Message,"how are you") or string.match(Message,"how are ya")) then
+                    local ResponsesName = {", Friend.","."}
+                    local Responses = {"I am doing alright","I am well","I am good"}
+                    AskWellbeing()
+                end
+                if Message == ">:[" then
+                    local Responses = {"You seem upset, Friend?","Is everything alright, Friend?"}
+                    Chat(Responses[math.random(1,#Responses)])
+                    LastMessageTheme = "Emotion"
+                end
+                if Message == ":(" or Message == ":<" or Message == ":[" then
+                    local Responses = {"You seem upset, Friend?","Is everything alright, Friend?"}
+                    Chat(Responses[math.random(1,#Responses)])
+                    LastMessageTheme = "EmotionUnwell"
+                end
+                if Message == "doe!" or Message == "doey!" then
+                    local Responses = {", Friend?","?"}
+                    Chat("Friend!")
+                    LastMessageTheme = "Directed"
+                end
+                if string.match(Message,"soup eggs") then
+                    Chat("Soup Eggs in your bed, Soup Eggs on your head. Soup Eggs on your dad instead.")
+                end
+                if (string.match(Message, "hello") or string.match(Message, "hai") or
+                string.match(Message, "hi") or string.match(Message, "hey")) then
+                    if ((string.match(Message,"doe") and LastMessageTheme ~= "Greeting") or LastMessageTheme == "Directed") then
+                        local Responses = {"Hello there, Friend!","Hi there, Friend!","Hello, Friend!"}
+                            Chat(Responses[math.random(1,#Responses)])
+                            LastMessageTheme = "Greeting"
+                    elseif LastMessageTheme == "Greeting" then
+                        Chat("You seem to be greeting me alot. You must be happy to see me")
+                    end
+                end
+				if string.match(Message,"actlook") then
+					Lookatmu = not Lookatmu
+					Chat("Pivoting is now set to "..tostring(Lookatmu)..".")
+				end
+				if string.match(Message,"actsee") then
+					if LastObstruction == nil then
+						Chat("There are no objects in my view.")
+					else
+						Chat("Object in view: "..LastObstruction.Instance.Name)
+					end
+				end
+				if Message == ":D" or Message==":)" or Message==":>" or Message==":]" then
+                    Chat(":D")
+                    if LastMessageTheme == "Emotion" then
+                        Chat("You seem happy today, Friend!")
+                    end
+                    LastMessageTheme = "Emotion"                
+				end
+				if string.match(Message,"actstand")	and Player.Character.Humanoid.Sit == true then
+					Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping,true)
+					Process = true
+				end
+				if string.match(Message,"actsit") then
+					Player.Character.Humanoid.Sit = true
+					Chat("I am now sitting.")
+					Process = true
+				end
+				if string.match(Message,"ye") and Question == "Sit" then
+					Chat("Thank you, Friend!")
+					Player.Character.Humanoid.Sit = true
+					Process = true
+				end
+                if string.match(Message,"actobjectinfo") then
+                    if PartMember then
+                        if PartMember:FindFirstChild("Humanoid") then
+                            Chat("The object I am looking at is a Humanoid Model called "..PartMember.Name..".")
+                            if game.Players:GetPlayerFromCharacter(PartMember) then
+                            Chat("It seams this Humanoid Model is a Player Character.")
+                            end
+                        else
+                            Chat("The object I am looking at is called"..PartMember.Name,".")
+                        end
+                    else
+                    Chat("No partmember detected.")        
+                    end
+                end
+				if string.match(Message,"actpiggyback") then
+					PiggyBackEnabled = not PiggyBackEnabled
+                    if PiggyBackEnabled then
+            			local SeatedChats = {"That's more comfortable","This seat is comfy.","Hey, Friend, were sitting together now!","",":D"}
+			            local Chattopic = SeatedChats[math.random(1,#SeatedChats)]
+			            if Chattopic ~= "" then
+				            Chat(Chattopic)
+			            end
+                    else
+                        Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping,true)
+                    end
+				end
+				if string.match(Message,"actcheckview") then
+					if RayCast() then
+						Chat("I can see you, Friend.")
+					else
+						Chat("I cannot see you, Friend.")
+					end
+					Process = true
+				end
+				if string.match(Message,"acthelp") then
+					Help()
+					Process = true
+				end
+                if string.match(Message,"huh") or Message == "?" then
+                    local Responses = {"Thinking are you?",
+                    "Is there a prboelm, Friend?","Everything is okay, Friend?",
+                    "Hmmm.","What's on your mind, Friend?"}
+                    Chat(Responses[math.random(1,#Responses)])
+                end
+                if string.match(Message,"doe") and string.match(Message,"sorry") and not string.match(Message,"not sorry") then
+                    local Responses = {"Its okay accidents happen.","You don't have to apologize, Friend.","Everything is okay, Friend.","No worries.","It's alright, Friend."}
+                    Chat(Responses[math.random(1,#Responses)])
+                end
+                if string.match(Message,"actquit") then
+                    Chat("Program will now quit.")
+                    Enabled = false
+                end
+
+                if string.match(Message,"actsleep") then
+                    Chat("Okay I will sleep now. Goodnight, Friend!")
+                    task.wait(0.1)
+                    SleepEnabled = true
+                    Player.Character.Humanoid.PlatformStand = true
+                    for i = 1,2 do
+                        Player.Character:PivotTo(Player.Character.PrimaryPart.CFrame * CFrame.Angles(math.rad(90),0,0))
+                    end
+                    repeat
+                        
+                        Player.Character.Humanoid.PlatformStand = true
+                        task.wait()
+                    until not SleepEnabled
+                    Player.Character.Humanoid.PlatformStand = false
+                end
+                if string.match(Message,"actwake") then
+                    SleepEnabled = false
+                    Chat("I am awake now!")
+                end
+				if string.match(Message,"actcometo") then
+					Player.Character:PivotTo(MU.Character.PrimaryPart.CFrame)
+					local RandomTable = {4,-4,-5,5,-6,6}
+					WalkTo(RandomTable[math.random(1,#RandomTable)])
+					Player.Character.Humanoid.MoveToFinished:Wait()
+					LookAt()
+				end
+			end
+		end)
+	end
+end
+
+local ObjectCanSee = false
+
+function CheckPartMember()
+    if PartMember and not ObjectCanSee then
+        if PartMember:FindFirstChild("Humanoid") then
+            local PL = game.Players:GetPlayerFromCharacter(PartMember)
+            if PL then
+                Chat(PL.Name.." was in my way.")
+                PartMember = nil
+                ObjectCanSee = true
+            end
+        end
+    end
+end
+local SitdownCount = 0
+repeat task.wait() until MU.Character and Player.Character
+
+Player.Character:PivotTo(MU.Character.Head.CFrame * CFrame.new(0,0,-4))
+LookAt()
+local Greetings = {"Hello","Hi there","Hey","Hey there"}
+Chat(Greetings[math.random(1,#Greetings)]..", Friend!")
+task.wait(1)
+AskWellbeing()
+task.wait(2)
+function GetSeat()
+    local MaxDist = 100
+    local Nearest = nil
+    for i,Seat in pairs(workspace:GetDescendants()) do
+        if Seat:IsA("Seat") then
+        if not Seat.Occupant and (MU.Character.PrimaryPart.Position - Seat.Position).Magnitude < MaxDist then
+            MaxDist = (MU.Character.PrimaryPart.Position - Seat.Position).Magnitude
+            Nearest = Seat
+        end
+        end
+    end
+    if Nearest then
+        repeat
+            Player.Character.Humanoid:MoveTo(Nearest.Position)            
+            if (Nearest.Position - Player.Character.PrimaryPart.Position).Magnitude < 2 then
+                Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping,true)
+                task.wait(1)
+            end
+            task.wait()
+        until Player.Character.Humanoid.Sit or not MU.Character.Humanoid.Sit
+    end
+end
+local GameLoop = game:GetService("RunService").Heartbeat:Connect(function()
+    if PiggyBackEnabled then
+		Player.Character.Humanoid.Sit = true
+		Player.Character:PivotTo(MU.Character.Head.CFrame * CFrame.new(0,-0.125,1))
+    end
+end)
+
+while Enabled do
+	pcall(function()
+        if SleepEnabled then
+            Chat("Zzz")
+            task.wait(10)
+        end
+		repeat task.wait() until MU.Character and Player.Character
+
+        if Player.Character.PrimaryPart.Velocity.Magnitude <= 0.1 then
+            CheckPartMember()
+        else
+            ObjectCanSee = false
+        end
+
+		if MU.Character.PrimaryPart.Velocity.Magnitude <= 0.5 and not MU.Character.Humanoid.Sit then
+            ElapsedAFKTime = ElapsedAFKTime + 0.25
+            if ElapsedAFKTime == 200 then
+                Chat("You haven't moved in quite some time, Friend. You must be afk.")
+            end
+            if ElapsedAFKTime == 300 then
+                Chat("I'm getting sleepy.")
+                if not SleepEnabled then
+                    SleepEnabled = true
+                    repeat
+                        Chat("Zzz")
+                        task.wait(10)
+                    until MU.Character and MU.Character.PrimaryPart.Velocity.Magnitude ~= 0.1        
+                    SleepEnabled = false
+                end
+            end
+        else
+            if ElapsedAFKTime >= 200 then
+                Chat("Glad to see you have returned, Friend!")
+            end
+            ElapsedAFKTime = 0
+        end
+        if Player.Character.PrimaryPart.Name ~= "HumanoidRootPart" then
+			Player.Character.PrimaryPart = Player.Character:FindFirstChild("HumanoidRootPart")
+		end
+		if MU.Character.PrimaryPart.Name ~= "HumanoidRootPart" then
+			MU.Character.PrimaryPart = MU.Character:FindFirstChild("HumanoidRootPart")
+		end
+		if GetToolsCopy then
+			GetTools()
+		end
+		if not PiggyBackEnabled and Process and Player.Character.Humanoid.Sit == false then
+			task.wait(1)
+			Process = false
+		end
+		if Follow == true and not Process and MU.Character.Humanoid.Sit == false and not PiggyBackEnabled then
+			if Player.Character.Humanoid.FloorMaterial ~= Enum.Material.Air and GetY() then
+				Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping,true)
+				ClimbLadder()
+			end
+			if Player.Character.Humanoid.Sit == true and not PiggyBackEnabled then
+				Player.Character.HumanoidRootPart.Anchored = false
+				Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping,true)
+			end
+			if GetDistance() <= 6 then
+				if GetDistance() < 3 then
+					if Player.Character.PrimaryPart.Velocity.Magnitude <= 0.01 then
+						local RandomTable = {3,-3,-4,4}
+						WalkTo(RandomTable[math.random(1,#RandomTable)])
+					end
+				else
+					Player.Character.Humanoid:MoveTo(Player.Character.PrimaryPart.Position)
+					if Player.Character.PrimaryPart.Velocity.Magnitude <= 0.01 and Player.Character.Humanoid.FloorMaterial ~= Enum.Material.Air then
+						if Lookatmu then
+							LookAt()
+						end
+					end
+				end
+			end
+			if GetDistance() > 6 then
+				if GetDistance() > 35 and MU.Character.Humanoid.Sit == false then
+					Player.Character:PivotTo(MU.Character.PrimaryPart.CFrame)
+				else
+					WalkTo(0)
+				end
+			end
+			if Player.Character.Humanoid:GetState() == Enum.HumanoidStateType.Climbing then
+				ClimbLadder()
+			end
+		end
+        if not PiggyBackEnabled then
+            if Player.Character.Humanoid.Sit ~= MU.Character.Humanoid.Sit then
+                if Player.Character.Humanoid.Sit == false then
+                    GetSeat()
+                else
+                    Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping,true)
+                end
+            end
+        end
+        task.wait()
+	end)
+end
+if ChatServiceTab then
+    ChatServiceTab:Disconnect()
+end
+GameLoop:Disconnect()
+script:Destroy()
