@@ -324,9 +324,14 @@ if TextChatService then
 					Help()
 					Process = true
 				end
+		if string.match(Message,"What do you") and string.match(Message,"think of") then
+			local Responses = {"I am not quite sure.",
+                    "I couldn't tell you, to be honest.","I don't know. What about you, Friend?",}
+                    Chat(Responses[math.random(1,#Responses)])
+		end
                 if string.match(Message,"huh") or Message == "?" then
                     local Responses = {"Thinking are you?",
-                    "Is there a prboelm, Friend?","Everything is okay, Friend?",
+                    "Is there a problem, Friend?","Everything is okay, Friend?",
                     "Hmmm.","What's on your mind, Friend?"}
                     Chat(Responses[math.random(1,#Responses)])
                 end
