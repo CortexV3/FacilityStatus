@@ -79,7 +79,7 @@ function GetLookingAtPlayer()
 	local Dst = (MU.Character:FindFirstChild("HumanoidRootPart").CFrame * CFrame.new(0,0,-10)).Position
 	local Dr = (Dst - O)
 	local r = RaycastParams.new()
-	r.FilterDescendantsInstances = {MU.Character,Player.Character,Ignore}
+	r.FilterDescendantsInstances = {MU.Character}
 	r.FilterType = Enum.RaycastFilterType.Exclude
 	local Result = game.Workspace:Raycast(O,Dr,r)
 	if Result then
