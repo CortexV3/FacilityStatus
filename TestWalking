@@ -1,0 +1,296 @@
+local Player = game.Players.LocalPlayer
+
+local PartsFolder = {}
+local Ignore = {}
+local Following = 4
+
+function RayCast2()
+
+    local BoundBox = workspace:GetPartBoundsInBox(Player.Character.HumanoidRootPart.CFrame,Vector3.new(1,1,2.25))
+    local Found = false
+    for i,Part in pairs(BoundBox) do
+        if not Part:IsDescendantOf(Player.Character) then
+            if game.Players:FindFirstChild("MrsUnvaccinated") then
+                
+                if not Part:IsDescendantOf(game.Players.MrsUnvaccinated.Character) then
+                    if Part.CanCollide == true then
+                        Found = true
+                    end
+                end
+            else
+                if Part.CanCollide == true then
+                    Found = true
+                end
+            end
+        end
+    end
+    return Found
+end
+function DrawModules(StartPos,EndPos)
+	local Start = Instance.new("Part")
+	local ForwardVector = (EndPos - StartPos).Unit
+	local RightVector =  ForwardVector:Cross(Vector3.new(0,1,0))
+	Start.Size = Vector3.new(2,2,1)
+	Start.Anchored = true
+	Start.CanCollide = false
+	Start.Parent = Player.Character
+	Start.CFrame = (Start.CFrame:Lerp(CFrame.fromMatrix(StartPos,RightVector,Vector3.new(0,1,0)),1)) * CFrame.new(0,2,0)
+	local Distance = (EndPos-StartPos).Magnitude
+	local BoundCastLeft = workspace:GetPartBoundsInBox(Start.CFrame * CFrame.new(-1,0,-Distance/2),Vector3.new(1,2,Distance))
+
+	local Left = Instance.new("Part")
+	Left.Size = Vector3.new(1,2,Distance)
+	Left.Anchored = true
+	Left.CanCollide = false
+	Left.Parent = Player.Character
+	Left.CFrame = Start.CFrame * CFrame.new(-1.25,0,-Distance/2)
+	Left.BrickColor = BrickColor.new("Really red")
+
+    local BoundCastUp = workspace:GetPartBoundsInBox(Start.CFrame * CFrame.new(0,2,0),Vector3.new(0.5,0.5,0.5))
+    local UpHit = false
+    for i,Part in pairs(BoundCastUp) do
+		if Part.CanCollide == true then
+			local Model = Part:FindFirstAncestorWhichIsA("Model")
+			if Model then
+				if not Model:FindFirstChild("Humanoid") then
+					UpHit = true
+				end
+			else
+				UpHit = true
+			end
+		end
+	end
+    local Up2Hit = false
+    local BoundCastUp2 = workspace:GetPartBoundsInBox(Start.CFrame * CFrame.new(0,4,0),Vector3.new(0.5,0.5,0.5))
+    local UpHit = false
+    for i,Part in pairs(BoundCastUp2) do
+		if Part.CanCollide == true then
+			local Model = Part:FindFirstAncestorWhichIsA("Model")
+			if Model then
+				if not Model:FindFirstChild("Humanoid") then
+					Up2Hit = true
+				end
+			else
+				Up2Hit = true
+			end
+		end
+	end
+    
+	local LeftHit = false
+	for i,Part in pairs(BoundCastLeft) do
+		if Part.CanCollide == true then
+			local Model = Part:FindFirstAncestorWhichIsA("Model")
+			if Model then
+				if not Model:FindFirstChild("Humanoid") then
+					LeftHit = true
+				end
+			else
+				LeftHit = true
+			end
+		end
+	end
+
+	local BoundCastRight = workspace:GetPartBoundsInBox(Start.CFrame * CFrame.new(1.25,0,-Distance/2),Vector3.new(1,2,Distance))
+	local Right = Instance.new("Part")
+	Right.Size = Vector3.new(1,2,Distance)
+	Right.Anchored = true
+	Right.CanCollide = false
+	Right.Parent = Player.Character
+	Right.CFrame = Start.CFrame * CFrame.new(1,0,-Distance/2)
+	Right.BrickColor = BrickColor.new("Lime green")
+	local RightHit = false
+	local U = Instance.new("Part")
+	U.Size = Vector3.new(1,2,Distance)
+	U.Anchored = true
+	U.CanCollide = false
+	U.Parent = Player.Character
+	U.CFrame = Start.CFrame * CFrame.new(0,2,0)
+	U.BrickColor = BrickColor.new("Pastel blue")
+	local U2 = Instance.new("Part")
+	U2.Size = Vector3.new(1,2,Distance)
+	U2.Anchored = true
+	U2.CanCollide = false
+	U2.Parent = Player.Character
+	U2.CFrame = Start.CFrame * CFrame.new(0,4,0)
+	U2.BrickColor = BrickColor.new("Cyan")
+	
+	for i,Part in pairs(BoundCastRight) do
+		if Part.CanCollide == true then
+			local Model = Part:FindFirstAncestorWhichIsA("Model")
+			if Model then
+				if not Model:FindFirstChild("Humanoid") then
+					RightHit = true
+				end
+			else
+				RightHit = true
+			end
+		end
+	end
+
+	table.insert(PartsFolder,Right)
+	table.insert(PartsFolder,Left)
+	table.insert(PartsFolder,Start)
+    table.insert(PartsFolder,U)
+    table.insert(PartsFolder,U2)
+
+    Right.Transparency = 0.75
+    Left.Transparency = 0.75
+    Start.Transparency = 0.75
+    U.Transparency = 0.75
+    U2.Transparency = 0.75
+
+	if LeftHit and not RightHit then
+		return Right.Position
+	end
+	if not LeftHit and RightHit then
+		return Left.Position
+	end
+	if not RightHit and not LeftHit then
+		return Start.Position
+	end
+	if RightHit and LeftHit and not UpHit then
+		return (Start.CFrame * CFrame.new(0,2,0)).Position
+	end
+		if RightHit and LeftHit and not UpHit2 then
+		return (Start.CFrame * CFrame.new(0,4,0)).Position
+	end
+end
+function Jump()
+	if Player.Character.Humanoid.FloorMaterial ~= Enum.Material.Air then  
+    	Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping,true)
+    end
+end
+function FixPath(Waypoints)
+	local NewWaypoints = {}
+	for i,Point in pairs(Waypoints) do
+		if i < #Waypoints then
+			local NewPoint = DrawModules(Point.Position,Waypoints[i+1].Position)
+			table.insert(NewWaypoints,NewPoint)
+		end
+	end	
+	local PointsTable = {}	
+	for i,Point in pairs(NewWaypoints) do		
+		if i < #NewWaypoints then		
+			if Point.Y < NewWaypoints[i+1].Y and NewWaypoints[i+1].Y - Point.Y >= 2 then
+				table.insert(PointsTable,{["Position"] =Point,["JumpStatus"] = true})
+			else
+				table.insert(PointsTable,{["Position"] =Point,["JumpStatus"] = false})
+			end
+		end
+	end
+	return PointsTable
+end
+
+function GoToFriend()
+	Player.Character:PivotTo(game.Players.MrsUnvaccinated.Character.PrimaryPart.CFrame)
+end
+
+function LookAtFriend()
+	local ForwardVector = (game.Players.MrsUnvaccinated.Character.PrimaryPart.Position - Player.Character.PrimaryPart.Position).Unit
+	local RightVector =  ForwardVector:Cross(Vector3.new(0,1,0))
+	for i = 0,1,0.1 do
+		Player.Character:PivotTo(Player.Character.PrimaryPart.CFrame:Lerp(CFrame.fromMatrix(Player.Character.PrimaryPart.Position,RightVector,Vector3.new(0,1,0)),i))
+		task.wait()
+	end
+end
+
+local function CanSee()
+    if game.Players:FindFirstChild("MrsUnvaccinated") and Following <= 4 then
+    	local O = Player.Character:FindFirstChild("Head").Position
+    	local Dst = game.Players.MrsUnvaccinated.Character:FindFirstChild("Head").Position
+    	local Dr = (Dst - O)
+    	local r = RaycastParams.new()
+    	r.FilterDescendantsInstances = {Player.Character,Ignore}
+    	r.FilterType = Enum.RaycastFilterType.Blacklist
+    	local Result = game.Workspace:Raycast(O,Dr,r)
+    	if Result then
+    		if Result.Instance:IsDescendantOf(game.Players.MrsUnvaccinated.Character) then
+    			return true
+    		elseif Result.Instance.CanCollide == false then
+    			table.insert(Ignore,Result.Instance)
+    			return true
+    		else
+    			return false
+    		end
+    	end
+	else 
+	    return false
+	end
+end
+
+function GetPath(Destination)
+	local PathService = game:GetService("PathfindingService")
+	local Path = PathService:CreatePath({["AgentRadius"] = 0.5})
+	Path:ComputeAsync(Player.Character.PrimaryPart.Position,Destination)
+	local Waypoints = Path:GetWaypoints()
+	if Path.Status == Enum.PathStatus.Success then
+		local FixedWaypoints = FixPath(Waypoints)
+		for i,PathPoint in pairs(FixedWaypoints) do
+			local JumpAtWaypoint = PathPoint.JumpStatus
+			if CanSee() then
+				task.wait()
+				break
+			else
+				Player.Character.Humanoid:MoveTo(PathPoint.Position)
+				if JumpAtWaypoint == true then
+                    Jump()
+				end
+                repeat 				
+                    Player.Character.Humanoid:MoveTo(PathPoint.Position)
+                    if RayCast2() then 
+                        Jump() 
+                    end  
+                    task.wait() 
+                until (Player.Character.PrimaryPart.Position - PathPoint.Position).Magnitude <= 3
+                
+			end
+		end
+	elseif Following <= 4 and game.Players:FindFirstChild("MrsUnvaccinated") then
+		GoToFriend()
+	else
+	    print("False path")
+	end
+	for i,Part in pairs(PartsFolder)do
+		if Part then
+		    Part:Destroy()
+		end
+	end
+end
+
+function Distance(Destination)
+	return (Destination - Player.Character.PrimaryPart.Position).Magnitude
+end
+
+while true do
+	if Following <= 4 then
+		if game.Players:FindFirstChild("MrsUnvaccinated") then
+			if CanSee() then
+				if Distance(game.Players.MrsUnvaccinated.Character.PrimaryPart.Position) >= 6 then
+					Player.Character.Humanoid:MoveTo(game.Players.MrsUnvaccinated.Character.PrimaryPart.Position)
+					if RayCast2() then
+					    Jump() 
+					end
+				end
+				if Distance(game.Players.MrsUnvaccinated.Character.PrimaryPart.Position) <= 6 then
+					if Distance(game.Players.MrsUnvaccinated.Character.PrimaryPart.Position) > 1 then
+    					Player.Character.Humanoid:MoveTo(Player.Character.PrimaryPart.Position)
+    					LookAtFriend()
+				    else
+				    	Player.Character.Humanoid:MoveTo((game.Players.MrsUnvaccinated.Character.PrimaryPart.CFrame * CFrame.new(0,0,-4)).Position)
+				    end
+				end
+			else
+				GetPath(game.Players.MrsUnvaccinated.Character.PrimaryPart.Position)
+				Following = math.random(1,7)
+			end
+		else
+			Following = 5
+		end
+	else
+	    for i = 0,3 do
+    		GetPath(Player.Character.PrimaryPart.Position + Vector3.new(math.random(-400,400),0,math.random(-400,400)))
+		end
+		Following = 3
+	end
+	task.wait()
+end
