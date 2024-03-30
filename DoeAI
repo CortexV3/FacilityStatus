@@ -77,49 +77,28 @@ end
 
 local PathService = game:GetService("PathfindingService")
 
-function WanderCast()
+function WanderCast(Pos)
+	if not table.find(Ignore,game.Players.LocalPlayer.Character) then
+		table.insert(Ignore,game.Players.LocalPlayer.Character)
+	end
+	local O = game.Players.LocalPlayer.Character.PrimaryPart.Position
+	local D = Pos
 	
-	local Position = Player.Character.PrimaryPart.Position * Vector3.new(math.random(-25,25),0,math.random(-25,25))
+	local RP = RaycastParams.new()
+	RP.FilterDescendantsInstances = Ignore
+	RP.FilterType = Enum.RaycastFilterType.Exclude
 	
-	local Current = PathService:CreatePath({["AgentRadius"]=2.25})
-	
-	local Waypoints = Current:ComputeAsync(Player.Character.PrimaryPart.Position,Position)
-	
-	if Waypoints.Status == Enum.PathStatus.Success then
-		-- For each waypoint, create a part to visualize the path
-		local Cancel = false
-		
-		for _, waypoint in Waypoints:GetWaypoints() do
-			if not Cancel and not Follow then
-				if waypoint.Action == Enum.PathWaypointAction.Jump then
-					Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping,true)
-				end
-				local Finished = false
-				local IdleTime = false
-				repeat
-					if Player.Character.PrimaryPart.Velocity.Magnitude <= 0.1 then
-						Player.Character.Humanoid:MoveTo(waypoint.Position)
-					end
-					if (Player.Character.PrimaryPart.Position * Vector3.new(Player.Character.PrimaryPart.Position.X,waypoint.Position.Y,Player.Character.PrimaryPart.Position.Z) - waypoint.Position).Magnitude <= 0.75 then
-						Finished = true
-					end
-					if IdleTime >= 0.75 then
-						Cancel = true
-					end
-					if Player.Character.PrimaryPart.Velocity.Magnitude <= 0.5 then
-						IdleTime += 0.001
-					else
-						IdleTime = 0
-					end
-					task.wait()
-				until Finished or Follow
-				if Follow then
-					Cancel = true
-				end
-			end
+	local LookVector = CFrame.lookAt(O,D)
+	local Res = workspace:Raycast(O,(D-O),RP)
+	if Res then
+		if Res.Instance.CanCollide == false then
+			table.insert(Ignore,Res.Instance)
 		end
-	else
-		print("Path Cancel")
+		if Res.Distance <= 4 then
+			return
+		end
+		local Look = (CFrame.lookAt(Res.Position,game.Players.LocalPlayer.Character.PrimaryPart.Position)) * CFrame.new(0,0,-2)
+		game.Players.LocalPlayer.Character.Humanoid:MoveTo(Look.Position)
 	end
 end
 
@@ -542,7 +521,7 @@ while Enabled do
 				if Player.Character then
 					
 					if Player.Character.PrimaryPart.Velocity.Magnitude <= 0.1 then
-						WanderCast()
+						WanderCast(Player.Character.PrimaryPart.Position + Vector3.new(math.random(-100,100),0,math.random(-100,100)))
 					end
 					
 				end
