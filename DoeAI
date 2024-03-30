@@ -13,13 +13,13 @@ local ElapsedAFKTime = 0
 local DoeVersion = "Doe V3"
 Chat(DoeVersion.." Startup: Game is loaded.")
 task.wait(1)
-Chat(DoeVersion.." Startup: Awaiting authorized player [MrsUnvaccinated]")
-repeat task.wait() until game.Players:FindFirstChild("MrsUnvaccinated")
-Chat(DoeVersion.." Startup: MrsUnvaccinated has joined in.")
+Chat(DoeVersion.." Startup: Awaiting authorized player [logieblake666]")
+repeat task.wait() until game.Players:FindFirstChild("logieblake666")
+Chat(DoeVersion.." Startup: logieblake666 has joined in.")
 task.wait(5)
 Chat(DoeVersion.." Startup: Waiting for authorized player character")
 
-local MU = game.Players.MrsUnvaccinated
+local MU = game.Players.logieblake666
 local Ignore = {}
 local ToolBox = Player:FindFirstChild("Backpack")
 local LastObstruction = nil
@@ -178,7 +178,7 @@ if TextChatService then
 		ChatServiceTab = MessageRemote.OnClientEvent:Connect(function(Uwu)
 			local Speaker = Uwu.FromSpeaker
 			local Message = string.lower(Uwu.Message)
-			if Speaker == "MrsUnvaccinated" and not Process and Player.Character and game.Players:FindFirstChild("MrsUnvaccinated") then
+			if Speaker == "logieblake666" and not Process and Player.Character and game.Players:FindFirstChild("logieblake666") then
 	            if ElapsedAFKTime > 100 then
                     Chat("Glad to see you have returned, Friend!")
                 end
