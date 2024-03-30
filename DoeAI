@@ -636,11 +636,9 @@ while Enabled do
 			Process = false
 		end
 
-		if Follow == false then
-			if Player.Character then
-				if Player.Character.PrimaryPart.Velocity.Magnitude <= 0.1 then
-					GetRand(Player.Character.PrimaryPart.Position + Vector3.new(math.random(-50,50),0,math.random(-50,50)))
-				end
+		if Follow == false and Player.Character and Player.Character.PrimaryPart then
+			if Player.Character.PrimaryPart.Velocity.Magnitude <= 0.1 then
+				GetRand(Player.Character.PrimaryPart.Position + Vector3.new(math.random(-50,50),0,math.random(-50,50)))
 			end
 		end
 
