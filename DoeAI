@@ -175,7 +175,7 @@ function GetRand(Pos)
 								Player.Character.Humanoid:MoveTo(PT.PrimaryPart.Position + Vector3.new(math.random(-2,2),0,math.random(-2,2)))
 							end
 							if PT.Humanoid.FloorMaterial == Enum.Material.Air and Player.Character.Humanoid.FloorMaterial ~= Enum.Material.Air then
-								Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping.True)
+								Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping,true)
 							end
 							task.wait()
 						until Follow or not Player:FindFirstChild("ChatF") or not PT
