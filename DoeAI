@@ -125,7 +125,7 @@ function WanderCast(Pos)
 			table.insert(Ignore,Res.Instance)
 		end
 		if Res.Instance.Parent:FindFirstChild("Humanoid") and math.random(1,20) > 17 then
-			Chat(Res.Parent.Name.." is in front of me")
+			Chat(Res.Instance.Parent.Name.." is in front of me")
 		end
 		local Look = (CFrame.lookAt(Res.Position,game.Players.LocalPlayer.Character.PrimaryPart.Position)) * CFrame.new(0,0,-2)
 		game.Players.LocalPlayer.Character.Humanoid:MoveTo(Look.Position)
