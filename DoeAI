@@ -205,16 +205,26 @@ end
 
 Chat("I'm here finally.")
 task.wait(1)
-Chat("Gotta wait for "..AuthorizedPlayer)
+local DF = false
+if not AuthorizedPlayer then
+	Chat("Gotta wait for "..AuthorizedPlayer)
+	DF = true
+else
+	Chat("You're already in the game "..AuthorizedPlayer.."?")
+end
 repeat task.wait() until game.Players:FindFirstChild(AuthorizedPlayer)
-Chat(AuthorizedPlayer.. " joined the game. Yay!")
+if DF then
+	Chat(AuthorizedPlayer.. " joined the game. Yay!")
+end
+
 task.wait(5)
 Chat("Hmmm.")
-
-repeat 
-	LookRandom(Vector3.new(math.random(-200,200),0,math.random(-200,200)))
-	task.wait(4)
-until RayCast2()
+if not RayCast2() then
+	repeat 
+		LookRandom(Vector3.new(math.random(-200,200),0,math.random(-200,200)))
+		task.wait(4)
+	until RayCast2()
+end
 
 function GetDistance()
 	return (Player.Character.PrimaryPart.Position - MU.Character.PrimaryPart.Position).Magnitude
