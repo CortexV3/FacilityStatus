@@ -232,10 +232,9 @@ if MU then
 	end
 else
 	Chat("I guess my friend's not in the game yet.")
+	task.wait(5)
+	Chat("Hmmm.")
 end
-
-task.wait(5)
-Chat("Hmmm.")
 
 if MU and not RayCast2() then
 	repeat 
@@ -561,6 +560,7 @@ if MU then
 		task.wait(2)	
 	end
 end
+
 LastMessageTheme = "Wellbeing"
 
 function GetSeat()
@@ -600,12 +600,13 @@ while Enabled do
 	if Follow == false or not MU then
 		if Player.Character and Player.Character.PrimaryPart then
 			if Player.Character.PrimaryPart.Velocity.Magnitude <= 0.1 then
-				GetRand(Player.Character.PrimaryPart.Position + Vector3.new(math.random(-50,50),0,math.random(-50,50)))
+				if math.random(1,10) >= 7 then
+					LookRandom((Player.Character.PrimaryPart.Position + Vector3.new(math.random(-50,50),0,math.random(-50,50))))
+					task.wait(1)
+				else
+					GetRand(Player.Character.PrimaryPart.Position + Vector3.new(math.random(-50,50),0,math.random(-50,50)))
+				end
 			end
-		end
-		if not Follow and math.random(1,10) >= 7 and Player.Character.PrimaryPart.Velocity.Magnitude <= 0.1 then
-			LookRandom((Player.Character.PrimaryPart.Position + Vector3.new(math.random(-50,50),0,math.random(-50,50))))
-			task.wait(1)
 		end
 	end
 
