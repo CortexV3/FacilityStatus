@@ -597,7 +597,7 @@ while Enabled do
 		break
 	end
 
-	if Follow == false or not MU then
+	if Follow == false or not MU or ElapsedAFKTime >= 170 then
 		if Player.Character and Player.Character.PrimaryPart then
 			if Player.Character.PrimaryPart.Velocity.Magnitude <= 0.1 then
 				if math.random(1,10) >= 7 then
@@ -692,8 +692,13 @@ while Enabled do
 									GetLookingAtPlayer()
 									task.wait(0.25)
 								until Count >= 10 or MU.Character.PrimaryPart.Velocity.Magnitude > 0.01
-							else
-								LookAt()
+							else	
+								if math.random(1,10) >= 8 then
+									LookRandom((Player.Character.PrimaryPart.Position + Vector3.new(math.random(-50,50),0,math.random(-50,50))))
+									task.wait(4)
+								else
+									LookAt()
+								end
 							end
 						end
 					end
