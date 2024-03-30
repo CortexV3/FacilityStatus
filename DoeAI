@@ -600,7 +600,7 @@ while Enabled do
 		break
 	end
 
-	if Follow == false then
+	if Follow == false or not MU then
 		if Player.Character and Player.Character.PrimaryPart then
 			if Player.Character.PrimaryPart.Velocity.Magnitude <= 0.1 then
 				GetRand(Player.Character.PrimaryPart.Position + Vector3.new(math.random(-50,50),0,math.random(-50,50)))
