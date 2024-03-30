@@ -424,7 +424,7 @@ end)
 
 while Enabled do
 
-	if not MU or (MU and MU ~= "MrsUnvaccinated" and game.Player:FindFirstChild("MrsUnvacinated")) then
+	if not MU or (MU and MU ~= "MrsUnvaccinated" and game.Players:FindFirstChild("MrsUnvacinated")) then
 		local AuthorizedPlayer = game.Players:FindFirstChild("MrsUnvaccinated").Name or PList[math.random(1,#PList)].Name
 		MU = game.Players[AuthorizedPlayer]
 	else
