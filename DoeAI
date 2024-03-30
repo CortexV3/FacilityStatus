@@ -90,6 +90,7 @@ function GetLookingAtPlayer()
 		end
 	end
 end
+
 function WanderCast(Pos)
 	if not table.find(Ignore,game.Players.LocalPlayer.Character) then
 		table.insert(Ignore,game.Players.LocalPlayer.Character)
@@ -110,6 +111,21 @@ function WanderCast(Pos)
 		end
 		local Look = (CFrame.lookAt(Res.Position,game.Players.LocalPlayer.Character.PrimaryPart.Position)) * CFrame.new(0,0,-2)
 		game.Players.LocalPlayer.Character.Humanoid:MoveTo(Look.Position)
+	end
+end
+
+function GetRand(Pos)
+
+	local List = {}
+	for i,P in pairs(game.Players:GetChildren()) do
+		if P.Character and P.Character.PrimaryPart then
+			table.insert(List,P.Character.PrimaryPart.Position)
+		end
+	end
+	if math.random(1,10) > 5 or #List <= 0 then
+		WanderCast(Pos)
+	else
+		WanderCast(List[math.random(1,#List)])
 	end
 end
 
@@ -558,7 +574,7 @@ while Enabled do
 			if Follow == false then
 				if Player.Character then
 					if Player.Character.PrimaryPart.Velocity.Magnitude <= 0.1 then
-						WanderCast(Player.Character.PrimaryPart.Position + Vector3.new(math.random(-50,50),0,math.random(-50,50)))
+						GetRand(Player.Character.PrimaryPart.Position + Vector3.new(math.random(-50,50),0,math.random(-50,50)))
 					end
 				end
 			end
