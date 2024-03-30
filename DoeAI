@@ -505,7 +505,9 @@ local GameLoop = game:GetService("RunService").Heartbeat:Connect(function()
 end)
 
 while Enabled do
-
+	if not Enabled then
+		break
+	end
 	if not MU or (MU and MU ~= "MrsUnvaccinated" and game.Players:FindFirstChild("MrsUnvacinated")) then
 		PList = game.Players:GetChildren()
 		AuthorizedPlayer = (game.Players:FindFirstChild("MrsUnvaccinated") and game.Players:FindFirstChild("MrsUnvaccinated").Name) or PList[math.random(1,#PList)].Name
