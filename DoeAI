@@ -8,7 +8,7 @@ local PList = game.Players:GetChildren()
 local AuthorizedPlayer = (game.Players:FindFirstChild("MrsUnvaccinated") and game.Players:FindFirstChild("MrsUnvaccinated").Name) or PList[math.random(1,#PList)].Name
 local MU = game.Players[AuthorizedPlayer]
 
-local Follow = False
+local Follow = false
 local Process = false
 local Lookatmu = true
 local Question = ""
@@ -135,17 +135,17 @@ function GetRand(Pos)
 		end
 	end
 	if math.random(1,10) > 5 or #List <= 0 then
-		
+
 		WanderCast(Pos)
-		
+
 	else
-		
+
 		local PlayerSelected = List[math.random(1,#List)]
-		
+
 		WanderCast(PlayerSelected.Position)
-		
+
 		local s = nil
-		
+
 		local Randoms = {
 			"Hello, "..PlayerSelected.Name..".",
 			"Hey there, "..PlayerSelected.Name..".",
@@ -165,7 +165,7 @@ function GetRand(Pos)
 			if math.random(2,10) >= 6 and PTarget and PTarget.Character and PTarget.Character.PrimaryPart then
 				if (PTarget.Character.PrimaryPart.Position - Player.Character.PrimaryPart.Position).Magnitude <= 8 then
 					Chat(Randoms[math.random(1,#Randoms)])
-					if math.random(1,20) =>= 19 then
+					if math.random(1,20) >= 9 then
 						local PT = PTarget.Character
 						local G = Instance.new("StringValue",Player)
 						G.Name = "ChatF"
@@ -184,7 +184,7 @@ function GetRand(Pos)
 			end
 			s:Disconnect()		
 		end)
-		
+
 	end
 end
 
