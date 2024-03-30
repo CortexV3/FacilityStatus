@@ -129,6 +129,8 @@ function WanderCast(Pos)
 	end
 end
 
+
+
 function GetRand(Pos)
 
 	local List = {}
@@ -176,6 +178,7 @@ function GetRand(Pos)
 			end
 			s:Disconnect()		
 		end)
+		Player.Character.Humanoid.MoveToFinished:Wait()
 
 	end
 end
@@ -602,6 +605,11 @@ while Enabled do
 			if Player.Character.PrimaryPart.Velocity.Magnitude <= 0.1 then
 				GetRand(Player.Character.PrimaryPart.Position + Vector3.new(math.random(-50,50),0,math.random(-50,50)))
 			end
+		end
+		if not Follow and math.random(1,10) >= 7 then
+			
+			LookRandom((Player.Character.PrimaryPart.Position + Vector3.new(math.random(-50,50),0,math.random(-50,50))))
+			task.wait(1)
 		end
 	end
 
