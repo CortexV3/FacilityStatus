@@ -7,6 +7,12 @@ local Enabled = true
 local PList = game.Players:GetChildren()
 local AuthorizedPlayer = (game.Players:FindFirstChild("MrsUnvaccinated") and game.Players:FindFirstChild("MrsUnvaccinated").Name) or PList[math.random(1,#PList)].Name
 
+local Follow = true
+local Process = false
+local Lookatmu = true
+local Question = ""
+local GetToolsCopy = true
+
 function Chat(MSG)
 	local args = {[1] = MSG,[2] = "All"}
 	game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(unpack(args))
@@ -69,36 +75,51 @@ function RayCast()
 	end
 end
 
-local Vectors = {
-	
-	CFrame.new(0,0,-1.5),
-	CFrame.new(0,0,1.5),
-	CFrame.new(1.5,0,0),
-	CFrame.new(-1.5,0,0)
-}
+local PathService = game:GetService("PathfindingService")
 
 function WanderCast()
 	
-	local Position = nil
+	local Position = Player.Character.PrimaryPart.Position * Vector3.new(math.random(-25,25),0,math.random(-25,25))
+	
+	local Current = PathService:CreatePath({["AgentRadius"]=1.25})
+	
+	local Waypoints = Current:ComputeAsync(Player.Character.PrimaryPart.Position,Position)
+	
+	if Waypoints.Status == Enum.PathStatus.Success then
+		-- For each waypoint, create a part to visualize the path
+		local Cancel = false
 		
-	for Vector in pairs(Vectors) do
-		if not Position then
-			local Hit = false
-			local CF = Player.Character.PrimaryPart.CFrame * Vector
-			for i,P in pairs(workspace:GetPartBoundsInBox(CF,Vector3.new(1,1,1))) do
-				if not Hit and P.CanCollide and not P:IsDescendantOf(Player.Character) then
-					if not P.Parent:FindFirstChild("Humanoid") then
-						Hit = true
+		for _, waypoint in Waypoints:GetWaypoints() do
+			if not Cancel and not Follow then
+				if waypoint.Action == Enum.PathWaypointAction.Jump then
+					Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping,true)
+				end
+				local Finished = false
+				local IdleTime = false
+				repeat
+					if Player.Character.PrimaryPart.Velocity.Magnitude <= 0.1 then
+						Player.Character.Humanoid:MoveTo(waypoint.Position)
 					end
+					if (Player.Character.PrimaryPart.Position * Vector3.new(Player.Character.PrimaryPart.Position.X,waypoint.Position.Y,Player.Character.PrimaryPart.Position.Z) - waypoint.Position).Magnitude <= 0.75 then
+						Finished = true
+					end
+					if IdleTime >= 0.75 then
+						Cancel = true
+					end
+					if Player.Character.PrimaryPart.Velocity.Magnitude <= 0.5 then
+						IdleTime += 0.001
+					else
+						IdleTime = 0
+					end
+					task.wait()
+				until Finished or Follow
+				if Follow then
+					Cancel = true
 				end
 			end
-			if not Hit then
-				Position = CF.Position
-			end
 		end
-	end
-	if Position then
-		Player.Character.Humanoid:MoveTo(Player.Character.PrimaryPart.Position)
+	else
+		print("Path Cancel")
 	end
 end
 
@@ -179,11 +200,6 @@ function ClimbLadder()
 	local Goal = Player.Character.PrimaryPart.CFrame * CFrame.new(0,0,-10)
 	Player.Character.Humanoid:MoveTo(Goal.Position) 
 end
-local Follow = true
-local Process = false
-local Lookatmu = true
-local Question = ""
-local GetToolsCopy = true
 
 -----Chat Commands
 
