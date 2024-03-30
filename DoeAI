@@ -107,10 +107,10 @@ function GetLookingAtPlayer()
 end
 
 function WanderCast(Pos)
-	if not table.find(Ignore,game.Players.LocalPlayer.Character) then
-		table.insert(Ignore,game.Players.LocalPlayer.Character)
+	if not table.find(Ignore,Player.Character) then
+		table.insert(Ignore,Player.Character)
 	end
-	local O = game.Players.Locallayer.Character.PrimaryPart.Position
+	local O = Player.Character.PrimaryPart.Position
 	local D = Pos
 
 	local RP = RaycastParams.new()
