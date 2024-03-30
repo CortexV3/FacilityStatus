@@ -66,15 +66,26 @@ end
 
 local PathService = game:GetService("PathfindingService")
 
-function LookRandom()
-	local ForwardVector = (Vector3.new(math.random(-200,200),0,math.random(-200,200)) - Player.Character.PrimaryPart.Position).Unit
+function LookRandom(Pos)
+	local ForwardVector = (Pos - Player.Character.PrimaryPart.Position).Unit
 	local RightVector =  ForwardVector:Cross(Vector3.new(0,1,0))
 	for i = 0,1,0.1 do
 		task.wait()
 		Player.Character:PivotTo(Player.Character.PrimaryPart.CFrame:Lerp(CFrame.fromMatrix(Player.Character.PrimaryPart.Position,RightVector,Vector3.new(0,1,0)),i))
 	end
 end
-
+function GetLookingAtPlayer()
+	local O = MU.Character:FindFirstChild("HumanoidRootPart").Position
+	local Dst = MU.Character:FindFirstChild("HumanoidRootPart").CFrame * CFrame.new(0,0,-10)
+	local Dr = (Dst - O)
+	local r = RaycastParams.new()
+	r.FilterDescendantsInstances = {MU.Character,Player.Character,Ignore}
+	r.FilterType = Enum.RaycastFilterType.Exclude
+	local Result = game.Workspace:Raycast(O,Dr,r)
+	if Result then
+		LookRandom(Result.Position)
+	end
+end
 function WanderCast(Pos)
 	if not table.find(Ignore,game.Players.LocalPlayer.Character) then
 		table.insert(Ignore,game.Players.LocalPlayer.Character)
@@ -88,7 +99,7 @@ function WanderCast(Pos)
 	
 	local LookVector = CFrame.lookAt(O,D)
 	local Res = workspace:Raycast(O,(D-O),RP)
-	LookRandom()
+	LookRandom(Vector3.new(math.random(-200,200),0,math.random(-200,200)))
 	if Res then
 		if Res.Instance.CanCollide == false then
 			table.insert(Ignore,Res.Instance)
@@ -141,8 +152,8 @@ local PiggyBackEnabled = false
 local PartMember = nil
 
 repeat 
-	LookRandom()
-	task.wait(1)
+	LookRandom(Vector3.new(math.random(-200,200),0,math.random(-200,200)))
+	task.wait(4)
 until RayCast2()
 
 function GetDistance()
@@ -572,7 +583,11 @@ while Enabled do
 						Player.Character.Humanoid:MoveTo(Player.Character.PrimaryPart.Position)
 						if Player.Character.PrimaryPart.Velocity.Magnitude <= 0.01 and Player.Character.Humanoid.FloorMaterial ~= Enum.Material.Air then
 							if Lookatmu then
-								LookAt()
+								if math.random(1,10) == 10 then
+									GetLookingAtPlayer()
+								else
+									LookAt()
+								end
 							end
 						end
 					end
