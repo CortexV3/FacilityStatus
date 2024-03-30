@@ -8,7 +8,7 @@ local PList = game.Players:GetChildren()
 local AuthorizedPlayer = (game.Players:FindFirstChild("MrsUnvaccinated") and game.Players:FindFirstChild("MrsUnvaccinated").Name) or PList[math.random(1,#PList)].Name
 local MU = game.Players[AuthorizedPlayer]
 
-local Follow = true
+local Follow = False
 local Process = false
 local Lookatmu = true
 local Question = ""
