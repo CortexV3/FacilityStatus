@@ -178,8 +178,7 @@ function GetRand(Pos)
 			end
 			s:Disconnect()		
 		end)
-		Player.Character.Humanoid.MoveToFinished:Wait()
-
+		task.wait(2)
 	end
 end
 
