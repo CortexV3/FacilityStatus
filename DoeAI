@@ -13,6 +13,7 @@ local Process = false
 local Lookatmu = true
 local Question = ""
 local GetToolsCopy = true
+local Ignore = {}
 
 function Chat(MSG)
 	task.wait(2)
@@ -134,7 +135,6 @@ repeat task.wait() until game.Players:FindFirstChild(AuthorizedPlayer)
 Chat(AuthorizedPlayer.. " joined the game. Yay!")
 task.wait(5)
 Chat("Hmmm.")
-local Ignore = {}
 local ToolBox = Player:FindFirstChild("Backpack")
 local LastObstruction = nil
 local PiggyBackEnabled = false
