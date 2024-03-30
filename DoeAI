@@ -87,13 +87,10 @@ function WanderCast(Pos)
 	
 	local LookVector = CFrame.lookAt(O,D)
 	local Res = workspace:Raycast(O,(D-O),RP)
+	LookRandom()
 	if Res then
 		if Res.Instance.CanCollide == false then
 			table.insert(Ignore,Res.Instance)
-		end
-		if Res.Distance < 1 then
-			LookRandom()
-			return
 		end
 		local Look = (CFrame.lookAt(Res.Position,game.Players.LocalPlayer.Character.PrimaryPart.Position)) * CFrame.new(0,0,-2)
 		game.Players.LocalPlayer.Character.Humanoid:MoveTo(Look.Position)
@@ -228,6 +225,14 @@ if TextChatService then
 	if MessageRemote then
 		ChatServiceTab = MessageRemote.OnClientEvent:Connect(function(Inputted)
 			local Speaker = Inputted.FromSpeaker
+			if Speaker == Player.Name then
+			
+				if string.lower(Inputted.Message) == "ActQuit"then
+					Chat("Program will now quit.")
+					Enabled = false
+
+				end
+			end
 			if Speaker == AuthorizedPlayer and not Process and Player.Character and game.Players:FindFirstChild(AuthorizedPlayer) then
 				local Message = string.lower(Inputted.Message)
 				if ElapsedAFKTime > 100 then
