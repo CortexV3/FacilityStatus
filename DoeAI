@@ -147,11 +147,11 @@ function GetRand(Pos)
 		local s = nil
 		
 		local Randoms = {
-			"Hello, "+PlayerSelected.Name..".",
-			"Hey there, "+PlayerSelected.Name..".",
+			"Hello, "..PlayerSelected.Name..".",
+			"Hey there, "..PlayerSelected.Name..".",
 			":>",
 			":D",
-			"Nice avatar, "+PlayerSelected.Name.."!",
+			"Nice avatar, "..PlayerSelected.Name.."!",
 			"hmmm.",
 			"I like this place."}		
 		s = Player.Character.Humanoid.MoveToFinished:Connect(function()
