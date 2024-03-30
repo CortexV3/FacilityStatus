@@ -164,7 +164,10 @@ function GetRand(Pos)
 			"This place is something else.",
 			"Hi there.",
 			"I might walk over there.",
-			":)"
+			":)",
+			"Theres alot to look at here.",
+			"I want to live here.",
+			"Hehe",
 		}
 		s = Player.Character.Humanoid.MoveToFinished:Connect(function()
 			local PTarget = game.Players:FindFirstChild(PlayerSelected.Name)
