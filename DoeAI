@@ -332,7 +332,7 @@ if TextChatService then
 					end
 					LastMessageTheme = "Emotion"                
 				end
-				if string.match(Message,"actstand")	and Player.Character.Humanoid.Sit == true then
+				if string.match(Message,"actstand") and Player.Character.Humanoid.Sit == true then
 					Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping,true)
 					Process = true
 				end
