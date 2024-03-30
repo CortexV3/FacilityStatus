@@ -69,25 +69,35 @@ function RayCast()
 	end
 end
 
+local Vectors = {
+	
+	CFrame.new(0,0,-1.5),
+	CFrame.new(0,0,1.5),
+	CFrame.new(1.5,0,0),
+	CFrame.new(-1.5,0,0)
+}
 
 function WanderCast()
 	
-	local Hit = false
-	
-	for i,P in pairs(workspace:GetPartBoundsInBox(Player.Character.PrimaryPart.CFrame * CFrame.new(0,0,-1.5),Vector3.new(1,1,3))) do
+	local Position = nil
 		
-		if P.CanCollide and not P:IsDescendantOf(Player.Character) then
-			if P.Parent:FindFirstChild("Humanoid") then
-				if Player.Character.Humanoid.FloorMaterial ~= Enum.Material.Air then
-					Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping,true)
-				end	
-			else
-				Hit = true
+	for Vector in pairs(Vectors) do
+		if not Position then
+			local Hit = false
+			local CF = Player.Character.PrimaryPart.CFrame * Vector
+			for i,P in pairs(workspace:GetPartBoundsInBox(CF,Vector3.new(1,1,1))) do
+				if not Hit and P.CanCollide and not P:IsDescendantOf(Player.Character) then
+					if not P.Parent:FindFirstChild("Humanoid") then
+						Hit = true
+					end
+				end
+			end
+			if not Hit then
+				Position = CF.Position
 			end
 		end
-		
 	end
-	if Hit and Player.Character then
+	if Position then
 		Player.Character.Humanoid:MoveTo(Player.Character.PrimaryPart.Position)
 	end
 end
