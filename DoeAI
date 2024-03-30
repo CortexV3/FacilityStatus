@@ -192,22 +192,24 @@ function GetRand(Pos)
 end
 
 function RayCast2()
-	local O = Player.Character.PrimaryPart.Position
-	local Dst = MU.Character.PrimaryPart.Position
-	local Dr = (Dst - O)
-	local r = RaycastParams.new()
-	r.FilterDescendantsInstances = {Player.Character,Ignore}
-	r.FilterType = Enum.RaycastFilterType.Exclude
-	local Result = workspace:Raycast(O,Dr,r)
-	if Result then
-		if Result.Instance:IsDescendantOf(MU.Character) then
-			return true
-		elseif Result.Instance.CanCollide == false then
-			Result.Instance:Destroy()
-		else
-			LastObstruction = Result
-			PartMember = Result.Instance:FindFirstAncestorWhichIsA("Model")
-			return false
+	if Player.Character.PrimaryPart and MU.Character.PrimaryPart then
+		local O = Player.Character.PrimaryPart.Position
+		local Dst = MU.Character.PrimaryPart.Position
+		local Dr = (Dst - O)
+		local r = RaycastParams.new()
+		r.FilterDescendantsInstances = {Player.Character,Ignore}
+		r.FilterType = Enum.RaycastFilterType.Exclude
+		local Result = workspace:Raycast(O,Dr,r)
+		if Result then
+			if Result.Instance:IsDescendantOf(MU.Character) then
+				return true
+			elseif Result.Instance.CanCollide == false then
+				Result.Instance:Destroy()
+			else
+				LastObstruction = Result
+				PartMember = Result.Instance:FindFirstAncestorWhichIsA("Model")
+				return false
+			end
 		end
 	end
 end
