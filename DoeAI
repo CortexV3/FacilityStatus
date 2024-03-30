@@ -71,7 +71,7 @@ end
 
 
 function WanderCast(Destination)
-	local O = Player.Character:FindFirstChild("Head").Position
+	local O = Player.Character.PrimaryPart.Position
 	local Dst = Destination
 	local Dr = (Dst - O)
 	local r = RaycastParams.new()
@@ -81,9 +81,10 @@ function WanderCast(Destination)
 	local LookAt = CFrame.lookAt(O,Dst)
 	
 	local Result = game.Workspace:Raycast(O,Dr,r)
+	print("Result returned", Result)
 	if Result then
-		local RDistance = Result.Distance - 3
-		return (LookAt * CFrame.new(0,0,RDistance)).Position
+		local RDistance = (Result.Distance - 3)
+		return (LookAt * CFrame.new(0,0,-RDistance)).Position
 	else
 		return Destination
 	end
