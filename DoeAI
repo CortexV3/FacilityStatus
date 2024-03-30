@@ -4,6 +4,8 @@ local Player = game.Players.LocalPlayer
 local SleepEnabled = false
 local Enabled = true
 
+local PList = game.Players:GetChildren()
+local AuthorizedPlayer = game.Players:FindFirstChild("MrsUnvaccinated").Name or PList[math.random(1,#PList)].Name
 function Chat(MSG)
 	local args = {[1] = MSG,[2] = "All"}
 	game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(unpack(args))
@@ -13,13 +15,13 @@ local ElapsedAFKTime = 0
 local DoeVersion = "Doe V3"
 Chat(DoeVersion.." Startup: Game is loaded.")
 task.wait(1)
-Chat(DoeVersion.." Startup: Awaiting authorized player [logieblake666]")
-repeat task.wait() until game.Players:FindFirstChild("logieblake666")
-Chat(DoeVersion.." Startup: logieblake666 has joined in.")
+Chat(DoeVersion.." Startup: Awaiting authorized player "..AuthorizedPlayer)
+repeat task.wait() until game.Players:FindFirstChild(AuthorizedPlayer)
+Chat(DoeVersion.." Startup: MrsUnvaccinated has joined in.")
 task.wait(5)
 Chat(DoeVersion.." Startup: Waiting for authorized player character")
 
-local MU = game.Players.logieblake666
+local MU = game.Players[AuthorizedPlayer]
 local Ignore = {}
 local ToolBox = Player:FindFirstChild("Backpack")
 local LastObstruction = nil
@@ -178,7 +180,7 @@ if TextChatService then
 		ChatServiceTab = MessageRemote.OnClientEvent:Connect(function(Uwu)
 			local Speaker = Uwu.FromSpeaker
 			local Message = string.lower(Uwu.Message)
-			if Speaker == "logieblake666" and not Process and Player.Character and game.Players:FindFirstChild("logieblake666") then
+			if Speaker == AuthorizedPlayer and not Process and Player.Character and game.Players:FindFirstChild(AuthorizedPlayer) then
 	            if ElapsedAFKTime > 100 then
                     Chat("Glad to see you have returned, Friend!")
                 end
@@ -421,100 +423,107 @@ local GameLoop = game:GetService("RunService").Heartbeat:Connect(function()
 end)
 
 while Enabled do
-	pcall(function()
-        if SleepEnabled then
-            Chat("Zzz")
-            task.wait(10)
-        end
-		repeat task.wait() until MU.Character and Player.Character
 
-        if Player.Character.PrimaryPart.Velocity.Magnitude <= 0.1 then
-            CheckPartMember()
-        else
-            ObjectCanSee = false
-        end
-
-		if MU.Character.PrimaryPart.Velocity.Magnitude <= 0.5 and not MU.Character.Humanoid.Sit then
-            ElapsedAFKTime = ElapsedAFKTime + 0.25
-            if ElapsedAFKTime == 200 then
-                Chat("You haven't moved in quite some time, Friend. You must be afk.")
-            end
-            if ElapsedAFKTime == 300 then
-                Chat("I'm getting sleepy.")
-                if not SleepEnabled then
-                    SleepEnabled = true
-                    repeat
-                        Chat("Zzz")
-                        task.wait(10)
-                    until MU.Character and MU.Character.PrimaryPart.Velocity.Magnitude ~= 0.1        
-                    SleepEnabled = false
-                end
-            end
-        else
-            if ElapsedAFKTime >= 200 then
-                Chat("Glad to see you have returned, Friend!")
-            end
-            ElapsedAFKTime = 0
-        end
-        if Player.Character.PrimaryPart.Name ~= "HumanoidRootPart" then
-			Player.Character.PrimaryPart = Player.Character:FindFirstChild("HumanoidRootPart")
-		end
-		if MU.Character.PrimaryPart.Name ~= "HumanoidRootPart" then
-			MU.Character.PrimaryPart = MU.Character:FindFirstChild("HumanoidRootPart")
-		end
-		if GetToolsCopy then
-			GetTools()
-		end
-		if not PiggyBackEnabled and Process and Player.Character.Humanoid.Sit == false then
-			task.wait(1)
-			Process = false
-		end
-		if Follow == true and not Process and MU.Character.Humanoid.Sit == false and not PiggyBackEnabled then
-			if Player.Character.Humanoid.FloorMaterial ~= Enum.Material.Air and GetY() then
-				Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping,true)
-				ClimbLadder()
-			end
-			if Player.Character.Humanoid.Sit == true and not PiggyBackEnabled then
-				Player.Character.HumanoidRootPart.Anchored = false
-				Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping,true)
-			end
-			if GetDistance() <= 6 then
-				if GetDistance() < 3 then
-					if Player.Character.PrimaryPart.Velocity.Magnitude <= 0.01 then
-						local RandomTable = {3,-3,-4,4}
-						WalkTo(RandomTable[math.random(1,#RandomTable)])
+	if not MU then
+		local AuthorizedPlayer = game.Players:FindFirstChild("MrsUnvaccinated").Name or PList[math.random(1,#PList)].Name
+		MU = game.Players[AuthorizedPlayer]
+	else
+		pcall(function()
+		        if SleepEnabled then
+		            Chat("Zzz")
+		            task.wait(10)
+		        end
+				repeat task.wait() until MU.Character and Player.Character
+		
+		        if Player.Character.PrimaryPart.Velocity.Magnitude <= 0.1 then
+		            CheckPartMember()
+		        else
+		            ObjectCanSee = false
+		        end
+		
+				if MU.Character.PrimaryPart.Velocity.Magnitude <= 0.5 and not MU.Character.Humanoid.Sit then
+		            ElapsedAFKTime = ElapsedAFKTime + 0.25
+		            if ElapsedAFKTime == 200 then
+		                Chat("You haven't moved in quite some time, Friend. You must be afk.")
+		            end
+		            if ElapsedAFKTime == 300 then
+		                Chat("I'm getting sleepy.")
+		                if not SleepEnabled then
+		                    SleepEnabled = true
+		                    repeat
+		                        Chat("Zzz")
+		                        task.wait(10)
+		                    until MU.Character and MU.Character.PrimaryPart.Velocity.Magnitude ~= 0.1        
+		                    SleepEnabled = false
+		                end
+		            end
+		        else
+		            if ElapsedAFKTime >= 200 then
+		                Chat("Glad to see you have returned, Friend!")
+		            end
+		            ElapsedAFKTime = 0
+		        end
+		        if Player.Character.PrimaryPart.Name ~= "HumanoidRootPart" then
+					Player.Character.PrimaryPart = Player.Character:FindFirstChild("HumanoidRootPart")
+				end
+				if MU.Character.PrimaryPart.Name ~= "HumanoidRootPart" then
+					MU.Character.PrimaryPart = MU.Character:FindFirstChild("HumanoidRootPart")
+				end
+				if GetToolsCopy then
+					GetTools()
+				end
+				if not PiggyBackEnabled and Process and Player.Character.Humanoid.Sit == false then
+					task.wait(1)
+					Process = false
+				end
+				if Follow == true and not Process and MU.Character.Humanoid.Sit == false and not PiggyBackEnabled then
+					if Player.Character.Humanoid.FloorMaterial ~= Enum.Material.Air and GetY() then
+						Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping,true)
+						ClimbLadder()
 					end
-				else
-					Player.Character.Humanoid:MoveTo(Player.Character.PrimaryPart.Position)
-					if Player.Character.PrimaryPart.Velocity.Magnitude <= 0.01 and Player.Character.Humanoid.FloorMaterial ~= Enum.Material.Air then
-						if Lookatmu then
-							LookAt()
+					if Player.Character.Humanoid.Sit == true and not PiggyBackEnabled then
+						Player.Character.HumanoidRootPart.Anchored = false
+						Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping,true)
+					end
+					if GetDistance() <= 6 then
+						if GetDistance() < 3 then
+							if Player.Character.PrimaryPart.Velocity.Magnitude <= 0.01 then
+								local RandomTable = {3,-3,-4,4}
+								WalkTo(RandomTable[math.random(1,#RandomTable)])
+							end
+						else
+							Player.Character.Humanoid:MoveTo(Player.Character.PrimaryPart.Position)
+							if Player.Character.PrimaryPart.Velocity.Magnitude <= 0.01 and Player.Character.Humanoid.FloorMaterial ~= Enum.Material.Air then
+								if Lookatmu then
+									LookAt()
+								end
+							end
 						end
 					end
+					if GetDistance() > 6 then
+						if GetDistance() > 35 and MU.Character.Humanoid.Sit == false then
+							Player.Character:PivotTo(MU.Character.PrimaryPart.CFrame)
+						else
+							WalkTo(0)
+						end
+					end
+					if Player.Character.Humanoid:GetState() == Enum.HumanoidStateType.Climbing then
+						ClimbLadder()
+					end
 				end
-			end
-			if GetDistance() > 6 then
-				if GetDistance() > 35 and MU.Character.Humanoid.Sit == false then
-					Player.Character:PivotTo(MU.Character.PrimaryPart.CFrame)
-				else
-					WalkTo(0)
-				end
-			end
-			if Player.Character.Humanoid:GetState() == Enum.HumanoidStateType.Climbing then
-				ClimbLadder()
-			end
-		end
-        if not PiggyBackEnabled then
-            if Player.Character.Humanoid.Sit ~= MU.Character.Humanoid.Sit then
-                if Player.Character.Humanoid.Sit == false then
-                    GetSeat()
-                else
-                    Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping,true)
-                end
-            end
-        end
-        task.wait()
-	end)
+		        if not PiggyBackEnabled then
+		            if Player.Character.Humanoid.Sit ~= MU.Character.Humanoid.Sit then
+		                if Player.Character.Humanoid.Sit == false then
+		                    GetSeat()
+		                else
+		                    Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping,true)
+		                end
+		            end
+		        end
+		        task.wait()
+			end)
+	end
+	
 end
 if ChatServiceTab then
     ChatServiceTab:Disconnect()
