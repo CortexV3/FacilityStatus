@@ -542,12 +542,7 @@ while Enabled do
 				if Player.Character then
 					
 					if Player.Character.PrimaryPart.Velocity.Magnitude <= 0.1 then
-						local Position = Player.Character.PrimaryPart.Position + Vector3.new(math.random(-100,100),0,math.random(-100,100))
-						Player.Character.Humanoid:MoveTo(Position)
-						repeat
-							WanderCast()
-							task.wait()
-						until Player.Character.PrimaryPart.Velocity.Magnitude <= 0.1 or Follow						
+						WanderCast()
 					end
 					
 				end
