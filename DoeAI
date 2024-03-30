@@ -70,23 +70,25 @@ function RayCast()
 end
 
 
-function WanderCast(Destination)
-	local O = Player.Character.PrimaryPart.Position
-	local Dst = Destination
-	local Dr = (Dst - O)
-	local r = RaycastParams.new()
-	r.FilterDescendantsInstances = {Player.Character,Ignore}
-	r.FilterType = Enum.RaycastFilterType.Exclude
+function WanderCast()
 	
-	local LookAt = CFrame.lookAt(O,Dst)
+	local Hit = false
 	
-	local Result = game.Workspace:Raycast(O,Dr,r)
-	print("Result returned", Result)
-	if Result then
-		local RDistance = (Result.Distance - 3)
-		return (LookAt * CFrame.new(0,0,-RDistance)).Position
-	else
-		return Destination
+	for i,P in pairs(workspace:GetPartBoundsInBox(Player.Character.PrimaryPart.CFrame * CFrame.new(0,0,-1.5),Vector3.new(1,1,3))) do
+		
+		if P.CanCollide and not P:IsDescendantOf(Player.Character) then
+			if P.Parent:FindFirstChild("Humanoid") then
+				if Player.Character.Humanoid.FloorMaterial ~= Enum.Material.Air then
+					Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping,true)
+				end	
+			else
+				Hit = true
+			end
+		end
+		
+	end
+	if Hit and Player.Character then
+		Player.Character.Humanoid:MoveTo(Player.Character.PrimaryPart.Position)
 	end
 end
 
@@ -514,9 +516,10 @@ while Enabled do
 				if Player.Character then
 					
 					if Player.Character.PrimaryPart.Velocity.Magnitude <= 0.1 then
-						local Position = WanderCast(Player.Character.PrimaryPart.Position + Vector3.new(math.random(-100,100),0,math.random(-100,100)))
+						local Position = Player.Character.PrimaryPart.Position + Vector3.new(math.random(-100,100),0,math.random(-100,100))
 						Player.Character.Humanoid:MoveTo(Position)
 						repeat
+							WanderCast()
 							task.wait()
 						until Player.Character.PrimaryPart.Velocity.Magnitude <= 0.1 or Follow						
 					end
