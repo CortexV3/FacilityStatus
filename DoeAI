@@ -493,6 +493,30 @@ while Enabled do
 				task.wait(1)
 				Process = false
 			end
+			
+			if Follow == false and not Process then
+				
+				if Player.Character then
+					
+					if Player.Character.Humanoid:GetState() == Enum.HumanoidStateType.Climbing then
+						ClimbLadder()
+					end
+					
+					if Player.Character.PrimaryPart.Velocity.Magnitude <= 0.1 then
+						Player.Character:MoveTo(Player.Character.PrimaryPart.Position + Vector3.new(math.random(-100,100),0,math.random(-100,100)))
+					else
+						if not RayCast2() then
+							
+							Player.Character:MoveTo(Player.Character.PrimaryPart.Position)
+							
+						end
+						
+					end
+					
+				end
+				
+			end
+			
 			if Follow == true and not Process and MU.Character.Humanoid.Sit == false and not PiggyBackEnabled then
 				if Player.Character.Humanoid.FloorMaterial ~= Enum.Material.Air and GetY() then
 					Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping,true)
