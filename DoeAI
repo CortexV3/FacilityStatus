@@ -452,12 +452,6 @@ while Enabled do
 			end
 			repeat task.wait() until MU.Character and Player.Character
 
-			if Player.Character.PrimaryPart.Velocity.Magnitude <= 0.1 then
-				CheckPartMember()
-			else
-				ObjectCanSee = false
-			end
-
 			if MU.Character.PrimaryPart.Velocity.Magnitude <= 0.5 and not MU.Character.Humanoid.Sit then
 				ElapsedAFKTime = ElapsedAFKTime + 0.25
 				if ElapsedAFKTime == 200 then
@@ -494,24 +488,27 @@ while Enabled do
 				Process = false
 			end
 			
-			if Follow == false and not Process then
+			if Follow == false then
 				if Player.Character then
-					
-					if Player.Character.Humanoid:GetState() == Enum.HumanoidStateType.Climbing then
-						ClimbLadder()
-					end
 					
 					if Player.Character.PrimaryPart.Velocity.Magnitude <= 0.1 then
 						Player.Character.Humanoid:MoveTo(Player.Character.PrimaryPart.Position + Vector3.new(math.random(-100,100),0,math.random(-100,100)))
-						task.wait(0.25)
-					else
-						Player.Character.Humanoid:MoveTo((Player.Character.PrimaryPart.CFrame * CFrame.new(0,0,2)).Position)						
+						repeat
+							task.wait()
+						until Player.Character.PrimaryPart.Velocity.Magnitude <= 0.1 or Follow						
 					end
 					
 				end
 			end
 			
 			if Follow == true and not Process and MU.Character.Humanoid.Sit == false and not PiggyBackEnabled then
+				
+				if Player.Character.PrimaryPart.Velocity.Magnitude <= 0.1 then
+					CheckPartMember()
+				else
+					ObjectCanSee = false
+				end
+				
 				if Player.Character.Humanoid.FloorMaterial ~= Enum.Material.Air and GetY() then
 					Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping,true)
 					ClimbLadder()
