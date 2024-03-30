@@ -68,6 +68,27 @@ function RayCast()
 		end
 	end
 end
+
+
+function WanderCast(Destination)
+	local O = Player.Character:FindFirstChild("Head").Position
+	local Dst = Destination
+	local Dr = (Dst - O)
+	local r = RaycastParams.new()
+	r.FilterDescendantsInstances = {Player.Character,Ignore}
+	r.FilterType = Enum.RaycastFilterType.Exclude
+	
+	local LookAt = CFrame.lookAt(O,Dst)
+	
+	local Result = game.Workspace:Raycast(O,Dr,r)
+	if Result then
+		local RDistance = Result.Distance - 3
+		return (LookAt * CFrame.new(0,0,RDistance)).Position
+	else
+		return Destination
+	end
+end
+
 function RayCast2()
 	local O = Player.Character.PrimaryPart.Position
 	local Dst = MU.Character.PrimaryPart.Position
@@ -492,7 +513,8 @@ while Enabled do
 				if Player.Character then
 					
 					if Player.Character.PrimaryPart.Velocity.Magnitude <= 0.1 then
-						Player.Character.Humanoid:MoveTo(Player.Character.PrimaryPart.Position + Vector3.new(math.random(-100,100),0,math.random(-100,100)))
+						local Position = WanderCast(Player.Character.PrimaryPart.Position + Vector3.new(math.random(-100,100),0,math.random(-100,100)))
+						Player.Character.Humanoid:MoveTo(Position)
 						repeat
 							task.wait()
 						until Player.Character.PrimaryPart.Velocity.Magnitude <= 0.1 or Follow						
