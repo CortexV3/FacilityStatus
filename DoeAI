@@ -172,7 +172,7 @@ function GetRand(Pos)
 						game:GetService("Debris"):AddItem(G,math.random(45,70))
 						repeat
 							if PT and PT.PrimaryPart then
-								Player.Character.Humnaoid:MoveTo(PT.PrimaryPart.Position + Vector3.new(math.random(-2,2),0,math.random(-2,2)))
+								Player.Character.Humanoid:MoveTo(PT.PrimaryPart.Position + Vector3.new(math.random(-2,2),0,math.random(-2,2)))
 							end
 							if PT.Humanoid.FloorMaterial == Enum.Material.Air and Player.Character.Humanoid.FloorMaterial ~= Enum.Material.Air then
 								Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping.True)
