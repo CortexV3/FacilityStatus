@@ -110,7 +110,7 @@ function WanderCast(Pos)
 	if not table.find(Ignore,game.Players.LocalPlayer.Character) then
 		table.insert(Ignore,game.Players.LocalPlayer.Character)
 	end
-	local O = game.Players.LocalPlayer.Character.PrimaryPart.Position
+	local O = game.Players.Locallayer.Character.PrimaryPart.Position
 	local D = Pos
 
 	local RP = RaycastParams.new()
@@ -143,9 +143,7 @@ function GetRand(Pos)
 		end
 	end
 	if math.random(1,10) > 5 or #List <= 0 then
-
 		WanderCast(Pos)
-
 	else
 
 		local PlayerSelected = List[math.random(1,#List)]
@@ -605,8 +603,7 @@ while Enabled do
 				GetRand(Player.Character.PrimaryPart.Position + Vector3.new(math.random(-50,50),0,math.random(-50,50)))
 			end
 		end
-		if not Follow and math.random(1,10) >= 7 then
-			
+		if not Follow and math.random(1,10) >= 7 and Player.Character.PrimaryPart.Velocity.Magnitude <= 0.1 then
 			LookRandom((Player.Character.PrimaryPart.Position + Vector3.new(math.random(-50,50),0,math.random(-50,50))))
 			task.wait(1)
 		end
