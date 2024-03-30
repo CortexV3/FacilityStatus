@@ -169,16 +169,19 @@ function GetRand(Pos)
 						local PT = PTarget.Character
 						local G = Instance.new("StringValue",Player)
 						G.Name = "ChatF"
-						game:GetService("Debris"):AddItem(G,math.random(45,70))
+						print("Follow started")
+						game:GetService("Debris"):AddItem(G,40)
 						repeat
 							if PT and PT.PrimaryPart then
-								Player.Character.Humanoid:MoveTo(PT.PrimaryPart.Position + Vector3.new(math.random(-2,2),0,math.random(-2,2)))
+								if Player.Character.Velocity <= 0.1 then
+									Player.Character.Humanoid:MoveTo(PT.PrimaryPart.Position + Vector3.new(math.random(-2,2),0,math.random(-2,2)))
+								end
 								if PT.Humanoid.FloorMaterial == Enum.Material.Air and Player.Character.Humanoid.FloorMaterial ~= Enum.Material.Air then
 									Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping,true)
 								end	
 							end
 							task.wait()
-						until Follow or not Player:FindFirstChild("ChatF") or not PT
+						until Follow == true or not Player:FindFirstChild("ChatF") or not PT
 					end
 				end
 			end
@@ -636,9 +639,11 @@ while Enabled do
 			Process = false
 		end
 
-		if Follow == false and Player.Character and Player.Character.PrimaryPart then
-			if Player.Character.PrimaryPart.Velocity.Magnitude <= 0.1 then
-				GetRand(Player.Character.PrimaryPart.Position + Vector3.new(math.random(-50,50),0,math.random(-50,50)))
+		if Follow == false then
+			if Player.Character then
+				if Player.Character.PrimaryPart.Velocity.Magnitude <= 0.1 then
+					GetRand(Player.Character.PrimaryPart.Position + Vector3.new(math.random(-50,50),0,math.random(-50,50)))
+				end
 			end
 		end
 
