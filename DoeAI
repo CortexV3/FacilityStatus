@@ -504,13 +504,8 @@ while Enabled do
 					
 					if Player.Character.PrimaryPart.Velocity.Magnitude <= 0.1 then
 						Player.Character.Humanoid:MoveTo(Player.Character.PrimaryPart.Position + Vector3.new(math.random(-100,100),0,math.random(-100,100)))
-					else
-						if not RayCast2() then
-							
-							Player.Character.Humanoid:MoveTo(Player.Character.PrimaryPart.Position)
-							
-						end
-						
+					elseif not RayCast2() then
+							Player.Character.Humanoid:MoveTo(Player.Character.PrimaryPart.Position)						
 					end
 					
 				end
