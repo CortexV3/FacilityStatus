@@ -128,31 +128,40 @@ function GetRand(Pos)
 	local List = {}
 	for i,P in pairs(game.Players:GetChildren()) do
 		if P.Character and P.Character.PrimaryPart and P.Name ~= "MrsUnvaccinated" then
-			table.insert(List,{["Position"] = P.Character.PrimaryPart.Position,["Name"] = P.Name})
+			table.insert(List,{
+				["Position"] = P.Character.PrimaryPart.Position,
+				["Name"] = P.Name
+			})
 		end
 	end
 	if math.random(1,10) > 5 or #List <= 0 then
+		
 		WanderCast(Pos)
+		
 	else
+		
 		local PlayerSelected = List[math.random(1,#List)]
 		
 		WanderCast(PlayerSelected.Position)
 		
-		local s
+		local s = nil
+		
+		local Randoms = {
+			"Hello, "+PlayerSelected.Name..".",
+			"Hey there, "+PlayerSelected.Name..".",
+			":>",
+			":D",
+			"Nice avatar, "+PlayerSelected.Name.."!",
+			"hmmm.",
+			"I like this place."}		
 		s = Player.Character.Humanoid.MoveToFinished:Connect(function()
 			if math.random(2,10) >= 8 then
-				local Randoms = {
-					"Hello, "+PlayerSelected.Name..".",
-					"Hey there, "+PlayerSelected.Name..".",
-					":>",
-					":D",
-					"Nice avatar, "+PlayerSelected.Name.."!",
-					"hmmm.",
-					"I like this place."}
+
 				Chat(Randoms[math.random(1,#Randoms)])
 			end
 			s:Disconnect()		
 		end)
+		
 	end
 end
 
