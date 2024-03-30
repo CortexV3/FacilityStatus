@@ -5,10 +5,10 @@ local SleepEnabled = false
 local Enabled = true
 
 local PList = game.Players:GetChildren()
-local AuthorizedPlayer = (game.Players:FindFirstChild("MrsUnvaccinated") and game.Players:FindFirstChild("MrsUnvaccinated").Name) or ""
-local MU = game.Players:FindFirstChild(AuthorizedPlayer)
+local AuthorizedPlayer = (game.Players:FindFirstChild("MrsUnvaccinated") and game.Players:FindFirstChild("MrsUnvaccinated").Name) or PList[math.random(1,#PList)].Name
+local MU = game.Players[AuthorizedPlayer]
 
-local Follow = true
+local Follow = false
 local Process = false
 local Lookatmu = true
 local Question = ""
@@ -164,25 +164,8 @@ function GetRand(Pos)
 			local PTarget = game.Players:FindFirstChild(PlayerSelected.Name)
 			if math.random(2,10) >= 6 and PTarget and PTarget.Character and PTarget.Character.PrimaryPart then
 				if (PTarget.Character.PrimaryPart.Position - Player.Character.PrimaryPart.Position).Magnitude <= 8 then
+					LookRandom(PTarget.Character.PrimaryPart.Position)
 					Chat(Randoms[math.random(1,#Randoms)])
-					if math.random(1,20) >= 9 then
-						local PT = PTarget.Character
-						local G = Instance.new("StringValue",Player)
-						G.Name = "ChatF"
-						print("Follow started")
-						game:GetService("Debris"):AddItem(G,40)
-						repeat
-							if PT and PT.PrimaryPart then
-								if Player.Character.Velocity <= 0.1 then
-									Player.Character.Humanoid:MoveTo(PT.PrimaryPart.Position + Vector3.new(math.random(-2,2),0,math.random(-2,2)))
-								end
-								if PT.Humanoid.FloorMaterial == Enum.Material.Air and Player.Character.Humanoid.FloorMaterial ~= Enum.Material.Air then
-									Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping,true)
-								end	
-							end
-							task.wait()
-						until Follow == true or not Player:FindFirstChild("ChatF") or not PT or (PT.PrimaryPart.Position - Player.Character.PrimaryPart.Position).Magnitude > 40
-					end
 				end
 			end
 			s:Disconnect()		
@@ -192,24 +175,22 @@ function GetRand(Pos)
 end
 
 function RayCast2()
-	if Player.Character.PrimaryPart and MU.Character.PrimaryPart then
-		local O = Player.Character.PrimaryPart.Position
-		local Dst = MU.Character.PrimaryPart.Position
-		local Dr = (Dst - O)
-		local r = RaycastParams.new()
-		r.FilterDescendantsInstances = {Player.Character,Ignore}
-		r.FilterType = Enum.RaycastFilterType.Exclude
-		local Result = workspace:Raycast(O,Dr,r)
-		if Result then
-			if Result.Instance:IsDescendantOf(MU.Character) then
-				return true
-			elseif Result.Instance.CanCollide == false then
-				Result.Instance:Destroy()
-			else
-				LastObstruction = Result
-				PartMember = Result.Instance:FindFirstAncestorWhichIsA("Model")
-				return false
-			end
+	local O = Player.Character.PrimaryPart.Position
+	local Dst = MU.Character.PrimaryPart.Position
+	local Dr = (Dst - O)
+	local r = RaycastParams.new()
+	r.FilterDescendantsInstances = {Player.Character,Ignore}
+	r.FilterType = Enum.RaycastFilterType.Exclude
+	local Result = workspace:Raycast(O,Dr,r)
+	if Result then
+		if Result.Instance:IsDescendantOf(MU.Character) then
+			return true
+		elseif Result.Instance.CanCollide == false then
+			Result.Instance:Destroy()
+		else
+			LastObstruction = Result
+			PartMember = Result.Instance:FindFirstAncestorWhichIsA("Model")
+			return false
 		end
 	end
 end
@@ -222,28 +203,28 @@ function LookAt()
 	end
 end
 
+
 Chat("I'm here finally.")
 task.wait(1)
-if MU then
-	local DF = false
-	if not AuthorizedPlayer then
-		Chat("Gotta wait for "..AuthorizedPlayer)
-		DF = true
-	else
-		Chat("You're already in the game "..AuthorizedPlayer.."?")
-	end
-	repeat task.wait() until game.Players:FindFirstChild(AuthorizedPlayer)
-	if DF then
-		Chat(AuthorizedPlayer.. " joined the game. Yay!")
-	end
-	task.wait(5)
-	Chat("Hmmm.")
-	if not RayCast2() then
-		repeat 
-			LookRandom(Vector3.new(math.random(-200,200),0,math.random(-200,200)))
-			task.wait(4)
-		until RayCast2()
-	end
+local DF = false
+if not AuthorizedPlayer then
+	Chat("Gotta wait for "..AuthorizedPlayer)
+	DF = true
+else
+	Chat("You're already in the game "..AuthorizedPlayer.."?")
+end
+repeat task.wait() until game.Players:FindFirstChild(AuthorizedPlayer)
+if DF then
+	Chat(AuthorizedPlayer.. " joined the game. Yay!")
+end
+
+task.wait(5)
+Chat("Hmmm.")
+if not RayCast2() then
+	repeat 
+		LookRandom(Vector3.new(math.random(-200,200),0,math.random(-200,200)))
+		task.wait(4)
+	until RayCast2()
 end
 
 function GetDistance()
@@ -552,17 +533,14 @@ function CheckPartMember()
 	end
 end
 local SitdownCount = 0
-if MU then
-	repeat task.wait() until MU.Character and Player.Character
+repeat task.wait() until MU.Character and Player.Character
 
-	Player.Character:PivotTo(MU.Character.Head.CFrame * CFrame.new(0,0,-4))
-	LookAt()
-	local Greetings = {"Hello","Hi there","Hey","Hey there"}
-	Chat(Greetings[math.random(1,#Greetings)]..", Friend!")
-	task.wait(1)
-	AskWellbeing()	
-end
-
+Player.Character:PivotTo(MU.Character.Head.CFrame * CFrame.new(0,0,-4))
+LookAt()
+local Greetings = {"Hello","Hi there","Hey","Hey there"}
+Chat(Greetings[math.random(1,#Greetings)]..", Friend!")
+task.wait(1)
+AskWellbeing()
 task.wait(2)
 function GetSeat()
 	local MaxDist = 100
@@ -598,116 +576,117 @@ while Enabled do
 		break
 	end
 	if not MU or (MU and MU ~= "MrsUnvaccinated" and game.Players:FindFirstChild("MrsUnvacinated")) then
-		AuthorizedPlayer = (game.Players:FindFirstChild("MrsUnvaccinated") and game.Players:FindFirstChild("MrsUnvaccinated").Name) or ""
+		PList = game.Players:GetChildren()
+		AuthorizedPlayer = (game.Players:FindFirstChild("MrsUnvaccinated") and game.Players:FindFirstChild("MrsUnvaccinated").Name) or PList[math.random(1,#PList)].Name
 		MU = game.Players:FindFirstChild(AuthorizedPlayer)
 	else
 		if SleepEnabled then
 			Chat("Zzz")
 			task.wait(10)
 		end
-		if MU then
-			repeat task.wait() until MU.Character and Player.Character
-			if MU.Character.PrimaryPart.Velocity.Magnitude <= 0.5 and not MU.Character.Humanoid.Sit then
-				ElapsedAFKTime = ElapsedAFKTime + 0.25
-				if ElapsedAFKTime == 200 then
-					Chat("You haven't moved in quite some time, Friend. You must be afk.")
-				end
-				if ElapsedAFKTime == 300 then
-					Chat("I'm getting sleepy.")
-					if not SleepEnabled then
-						SleepEnabled = true
-						repeat
-							Chat("Zzz")
-							task.wait(10)
-						until MU.Character and MU.Character.PrimaryPart.Velocity.Magnitude ~= 0.1        
-						SleepEnabled = false
-					end
-				end
-			else
-				if ElapsedAFKTime >= 200 then
-					Chat("Glad to see you have returned, Friend!")
-				end
-				ElapsedAFKTime = 0
-			end
-			if Player.Character.PrimaryPart.Name ~= "HumanoidRootPart" then
-				Player.Character.PrimaryPart = Player.Character:FindFirstChild("HumanoidRootPart")
-			end
-			if MU.Character.PrimaryPart.Name ~= "HumanoidRootPart" then
-				MU.Character.PrimaryPart = MU.Character:FindFirstChild("HumanoidRootPart")
-			end
-			if GetToolsCopy then
-				GetTools()
-			end
-			if not PiggyBackEnabled and Process and Player.Character.Humanoid.Sit == false then
-				task.wait(1)
-				Process = false
-			end
-			if Follow == true and not Process and MU and MU.Character.Humanoid.Sit == false and not PiggyBackEnabled then
+		repeat task.wait() until MU.Character and Player.Character
 
+		if MU.Character.PrimaryPart.Velocity.Magnitude <= 0.5 and not MU.Character.Humanoid.Sit then
+			ElapsedAFKTime = ElapsedAFKTime + 0.25
+			if ElapsedAFKTime == 200 then
+				Chat("You haven't moved in quite some time, Friend. You must be afk.")
+			end
+			if ElapsedAFKTime == 300 then
+				Chat("I'm getting sleepy.")
+				if not SleepEnabled then
+					SleepEnabled = true
+					repeat
+						Chat("Zzz")
+						task.wait(10)
+					until MU.Character and MU.Character.PrimaryPart.Velocity.Magnitude ~= 0.1        
+					SleepEnabled = false
+				end
+			end
+		else
+			if ElapsedAFKTime >= 200 then
+				Chat("Glad to see you have returned, Friend!")
+			end
+			ElapsedAFKTime = 0
+		end
+		if Player.Character.PrimaryPart.Name ~= "HumanoidRootPart" then
+			Player.Character.PrimaryPart = Player.Character:FindFirstChild("HumanoidRootPart")
+		end
+		if MU.Character.PrimaryPart.Name ~= "HumanoidRootPart" then
+			MU.Character.PrimaryPart = MU.Character:FindFirstChild("HumanoidRootPart")
+		end
+		if GetToolsCopy then
+			GetTools()
+		end
+		if not PiggyBackEnabled and Process and Player.Character.Humanoid.Sit == false then
+			task.wait(1)
+			Process = false
+		end
+
+		if Follow == false then
+			if Player.Character then
 				if Player.Character.PrimaryPart.Velocity.Magnitude <= 0.1 then
-					CheckPartMember()
-				else
-					ObjectCanSee = false
+					GetRand(Player.Character.PrimaryPart.Position + Vector3.new(math.random(-50,50),0,math.random(-50,50)))
 				end
+			end
+		end
 
-				if Player.Character.Humanoid.FloorMaterial ~= Enum.Material.Air and GetY() then
-					Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping,true)
-					ClimbLadder()
-				end
-				if Player.Character.Humanoid.Sit == true and not PiggyBackEnabled then
-					Player.Character.HumanoidRootPart.Anchored = false
-					Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping,true)
-				end
-				if GetDistance() <= 6 then
-					if GetDistance() < 3 then
-						if Player.Character.PrimaryPart.Velocity.Magnitude <= 0.01 then
-							local RandomTable = {3,-3,-4,4}
-							WalkTo(RandomTable[math.random(1,#RandomTable)])
-						end
-					else
-						Player.Character.Humanoid:MoveTo(Player.Character.PrimaryPart.Position)
-						if Player.Character.PrimaryPart.Velocity.Magnitude <= 0.01 and Player.Character.Humanoid.FloorMaterial ~= Enum.Material.Air then
-							if Lookatmu then
-								if math.random(1,30) == 25 then	
-									local Count = 0
-									repeat
-										Count += 1
-										GetLookingAtPlayer()
-										task.wait(0.25)
-									until Count >= 10 or MU.Character.PrimaryPart.Velocity.Magnitude > 0.01
-								else
-									LookAt()
-								end
+		if Follow == true and not Process and MU.Character.Humanoid.Sit == false and not PiggyBackEnabled then
+
+			if Player.Character.PrimaryPart.Velocity.Magnitude <= 0.1 then
+				CheckPartMember()
+			else
+				ObjectCanSee = false
+			end
+
+			if Player.Character.Humanoid.FloorMaterial ~= Enum.Material.Air and GetY() then
+				Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping,true)
+				ClimbLadder()
+			end
+			if Player.Character.Humanoid.Sit == true and not PiggyBackEnabled then
+				Player.Character.HumanoidRootPart.Anchored = false
+				Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping,true)
+			end
+			if GetDistance() <= 6 then
+				if GetDistance() < 3 then
+					if Player.Character.PrimaryPart.Velocity.Magnitude <= 0.01 then
+						local RandomTable = {3,-3,-4,4}
+						WalkTo(RandomTable[math.random(1,#RandomTable)])
+					end
+				else
+					Player.Character.Humanoid:MoveTo(Player.Character.PrimaryPart.Position)
+					if Player.Character.PrimaryPart.Velocity.Magnitude <= 0.01 and Player.Character.Humanoid.FloorMaterial ~= Enum.Material.Air then
+						if Lookatmu then
+							if math.random(1,30) == 25 then	
+								local Count = 0
+								repeat
+									Count += 1
+									GetLookingAtPlayer()
+									task.wait(0.25)
+								until Count >= 10 or MU.Character.PrimaryPart.Velocity.Magnitude > 0.01
+							else
+								LookAt()
 							end
 						end
 					end
 				end
-				if GetDistance() > 6 then
-					if GetDistance() > 35 and MU.Character.Humanoid.Sit == false then
-						Player.Character:PivotTo(MU.Character.PrimaryPart.CFrame)
-					else
-						WalkTo(0)
-					end
-				end
-				if Player.Character.Humanoid:GetState() == Enum.HumanoidStateType.Climbing then
-					ClimbLadder()
+			end
+			if GetDistance() > 6 then
+				if GetDistance() > 35 and MU.Character.Humanoid.Sit == false then
+					Player.Character:PivotTo(MU.Character.PrimaryPart.CFrame)
+				else
+					WalkTo(0)
 				end
 			end
-			if not PiggyBackEnabled then
-				if Player.Character.Humanoid.Sit ~= MU.Character.Humanoid.Sit then
-					if Player.Character.Humanoid.Sit == false then
-						GetSeat()
-					else
-						Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping,true)
-					end
-				end
-			end	
-			
+			if Player.Character.Humanoid:GetState() == Enum.HumanoidStateType.Climbing then
+				ClimbLadder()
+			end
 		end
-		if Follow == false or not MU then
-			if Player.Character then
-				if Player.Character.PrimaryPart.Velocity.Magnitude <= 0.1 then
-					GetRand(Player.Character.PrimaryPart.Position + Vector3.new(math.random(-50,50),0,math.random(-50,50)))
+		if not PiggyBackEnabled then
+			if Player.Character.Humanoid.Sit ~= MU.Character.Humanoid.Sit then
+				if Player.Character.Humanoid.Sit == false then
+					GetSeat()
+				else
+					Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping,true)
 				end
 			end
 		end
