@@ -543,15 +543,18 @@ function CheckPartMember()
 	end
 end
 local SitdownCount = 0
-repeat task.wait() until ((MU and MU.Character) or not MU) and Player.Character
+local Greetings = {"Hello","Hi there","Hey","Hey there"}
+
 if MU then
-	Player.Character:PivotTo(MU.Character.Head.CFrame * CFrame.new(0,0,-4))
-	LookAt()
-	local Greetings = {"Hello","Hi there","Hey","Hey there"}
-	Chat(Greetings[math.random(1,#Greetings)]..", Friend!")
-	task.wait(1)
-	AskWellbeing()
-	task.wait(2)	
+	repeat task.wait() until MU and MU.Character and Player.Character
+	if MU then
+		Player.Character:PivotTo(MU.Character.Head.CFrame * CFrame.new(0,0,-4))
+		LookAt()
+		Chat(Greetings[math.random(1,#Greetings)]..", Friend!")
+		task.wait(1)
+		AskWellbeing()
+		task.wait(2)	
+	end
 end
 LastMessageTheme = "Wellbeing"
 
@@ -601,6 +604,7 @@ while Enabled do
 		AuthorizedPlayer = (game.Players:FindFirstChild("MrsUnvaccinated") and game.Players:FindFirstChild("MrsUnvaccinated").Name) or ""
 		if AuthorizedPlayer ~= "" then			
 			MU = game.Players:FindFirstChild(AuthorizedPlayer)
+			Chat(Greetings[math.random(1,#Greetings)]..", Friend!")
 		end
 	else
 		if SleepEnabled then
