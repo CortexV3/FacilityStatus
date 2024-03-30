@@ -502,9 +502,10 @@ while Enabled do
 					end
 					
 					if Player.Character.PrimaryPart.Velocity.Magnitude <= 0.1 then
-						Player.Character.Humanoid:MoveTo(Player.Character.PrimaryPart.Position + Vector3.new(math.random(-25,25),0,math.random(-25,25)))
+						Player.Character.Humanoid:MoveTo(Player.Character.PrimaryPart.Position + Vector3.new(math.random(-100,100),0,math.random(-100,100)))
+						task.wait(0.25)
 					else
-							Player.Character.Humanoid:MoveTo((Player.Character.PrimaryPart.CFrame * CFrame.new(0,0,2)).Position)						
+						Player.Character.Humanoid:MoveTo((Player.Character.PrimaryPart.CFrame * CFrame.new(0,0,2)).Position)						
 					end
 					
 				end
