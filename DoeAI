@@ -714,9 +714,9 @@ while Enabled do
 				end
 			end
 		end
-		task.wait()
+		
 	end
-
+	task.wait()
 
 end
 if ChatServiceTab then
