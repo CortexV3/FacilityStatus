@@ -218,21 +218,26 @@ end
 
 Chat("I'm here finally.")
 task.wait(1)
-local DF = false
-if not AuthorizedPlayer then
-	Chat("Gotta wait for "..AuthorizedPlayer)
-	DF = true
+if MU then
+	local DF = false
+	if not AuthorizedPlayer then
+		Chat("Gotta wait for "..AuthorizedPlayer)
+		DF = true
+	else
+		Chat("You're already in the game "..AuthorizedPlayer.."?")
+	end
+	repeat task.wait() until game.Players:FindFirstChild(AuthorizedPlayer)
+	if DF then
+		Chat(AuthorizedPlayer.. " joined the game. Yay!")
+	end
 else
-	Chat("You're already in the game "..AuthorizedPlayer.."?")
-end
-repeat task.wait() until game.Players:FindFirstChild(AuthorizedPlayer)
-if DF then
-	Chat(AuthorizedPlayer.. " joined the game. Yay!")
+	Chat("I guess my friend's not in the game yet.")
 end
 
 task.wait(5)
 Chat("Hmmm.")
-if not RayCast2() then
+
+if MU and not RayCast2() then
 	repeat 
 		LookRandom(Vector3.new(math.random(-200,200),0,math.random(-200,200)))
 		task.wait(4)
