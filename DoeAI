@@ -81,7 +81,7 @@ function WanderCast()
 	
 	local Position = Player.Character.PrimaryPart.Position * Vector3.new(math.random(-25,25),0,math.random(-25,25))
 	
-	local Current = PathService:CreatePath({["AgentRadius"]=1.25})
+	local Current = PathService:CreatePath({["AgentRadius"]=2.25})
 	
 	local Waypoints = Current:ComputeAsync(Player.Character.PrimaryPart.Position,Position)
 	
