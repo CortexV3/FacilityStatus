@@ -117,7 +117,7 @@ function GetLookingAtPlayer()
 			local C = Instance.new("StringValue",Player)
 			C.Name = "ChatCD"
 			game:GetService("Debris"):AddItem(C,60)
-			local Name = AuthorizedChatters[MU].Names[math.random(1,#AuthorizedChatters[MU].Names)]
+			local Name = AuthorizedChatters[MU.Name].Names[math.random(1,#AuthorizedChatters[MU.Name].Names)]
 
 			Chat("You are looking at me, "..Name.."?")
 		end
