@@ -278,7 +278,7 @@ while Enabled do
 	if not Enabled then
 		break
 	end
-	if Character and RootPart then
+	if Character then
 		if not RootPart or not Humanoid then
 			RootPart = Character:FindFirstChild("HumanoidRootPart")
 			Humanoid = Character:FindFirstChild("Humanoid")
