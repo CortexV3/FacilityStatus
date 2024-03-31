@@ -382,7 +382,7 @@ if TextChatService then
 					LastMessageTheme = "Directed"
 					return
 				end
-				if string.find(Message,"doe") then
+				if string.match(Message,"doe") then
 					LastMessageTheme = "Directed"
 				end
 				if Message == "doe?" or Message == "doey?" then
@@ -414,8 +414,8 @@ if TextChatService then
 				if string.match(Message,"soup eggs") then
 					Chat("Soup Eggs in your bed, Soup Eggs on your head. Soup Eggs on your dad instead.")
 				end
-				if (string.find(Message, "hello") or string.find(Message, "hai") or
-					string.find(Message, "hi") or string.find(Message, "hey")) then
+				if (string.find(Message, "hello ") or string.find(Message, "hai") or
+					string.find(Message, "hi ") or string.find(Message, "hey ")) then
 					if LastMessageTheme == "Directed" then
 						local Responses = {"Hello there, Friend!","Hi there, Friend!","Hello, Friend!"}
 						Chat(Responses[math.random(1,#Responses)])
