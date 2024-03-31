@@ -117,7 +117,7 @@ function GetLookingAtPlayer()
 			local C = Instance.new("StringValue",Player)
 			C.Name = "ChatCD"
 			game:GetService("Debris"):AddItem(C,60)
-			local Name = AuthorizedChatters[AuthorizedPlayer].Names[math.random(1,#AuthorizedChatters[AuthorizedPlayer].Names)
+			local Name = AuthorizedChatters[AuthorizedPlayer].Names[math.random(1,#AuthorizedChatters[AuthorizedPlayer].Names)]
 
 			Chat("You are looking at me, "..Name.."?")
 		end
@@ -364,15 +364,15 @@ if TextChatService then
 			local Speaker = Inputted.FromSpeaker
 			if AuthorizedChatters[Speaker] and not Process and Player.Character and game.Players:FindFirstChild(Speaker) then
 				local Message = string.lower(Inputted.Message)
-				
+
 				local Name = AuthorizedChatters[Speaker].Names[math.random(1,#AuthorizedChatters[Speaker].Names)]
-				
+
 				if ElapsedAFKTime > 100 then
 					Chat("Glad to see you have returned, "..Name.. "!")
 				end
 
 				ElapsedAFKTime = 0
-				
+
 				if string.match(Message,"follow me doe") then
 					if Speaker ~= AuthorizedPlayer then
 						AuthorizedPlayer = Speaker
