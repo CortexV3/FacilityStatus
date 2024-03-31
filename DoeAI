@@ -374,7 +374,7 @@ if TextChatService then
 					GetToolsCopy = not GetToolsCopy
 					Chat("Tool Copy is now set to "..tostring(GetToolsCopy)..".")
 				end
-				if AuthorizedPlayer[Speaker].LastMessageTheme == "Wellbeing" then
+				if AuthorizedChatters[Speaker].LastMessageTheme == "Wellbeing" then
 					local Positives = {"ok",}
 					local Negatives = {"sad","bad"}
 					local AnswerType = ""
@@ -393,27 +393,27 @@ if TextChatService then
 					elseif AnswerType == "Negative" then
 						Chat("I am sorry to hear that you aren't alright.")
 					end
-					AuthorizedPlayer[Speaker].LastMessageTheme = "Directed"
+					AuthorizedChatters[Speaker].LastMessageTheme = "Directed"
 					return
 				end
 				if string.match(Message,"doe") then
-					AuthorizedPlayer[Speaker].LastMessageTheme = "Directed"
+					AuthorizedChatters[Speaker].LastMessageTheme = "Directed"
 				end
 				if Message == "doe?" or Message == "doey?" then
 					local Responses = {", "..Name.."?","?"}
 					Chat("Yes"..Responses[math.random(1,#Responses)])
-					AuthorizedPlayer[Speaker].LastMessageTheme = "Directed"
+					AuthorizedChatters[Speaker].LastMessageTheme = "Directed"
 				end
 				if (string.find(Message,"doe") or string.find(Message,"doey")) and (string.find(Message,"how are doing") or string.find(Message,"how are you") or string.find(Message,"how are ya")) then
 					local ResponsesName = {", "..Name..".","."}
 					local Responses = {"I am doing alright","I am well","I am good"}
-					AskWellbeing(Name)
+					AskWellbeing(Name,Speaker)
 					return
 				end
 				if Message == ">:[" or Message == ">:(" or Message == ":(" or Message == ":<" or Message == ":[" then
 					local Responses = {"You seem upset, "..Name.."?","Is everything alright, "..Name.."?"}
 					Chat(Responses[math.random(1,#Responses)])
-					AuthorizedPlayer[Speaker].LastMessageTheme = "Emotion"
+					AuthorizedChatters[Speaker].LastMessageTheme = "Emotion"
 				end
 
 				if Message == "doe!" or Message == "doey!" then
@@ -425,12 +425,12 @@ if TextChatService then
 				end
 				if (string.find(Message, "hello ") or string.find(Message, "hai") or
 					string.find(Message, "hi ") or string.find(Message, "hey ")) then
-					if AuthorizedPlayer[Speaker].LastMessageTheme == "Directed" then
+					if AuthorizedChatters[Speaker].LastMessageTheme == "Directed" then
 						local Responses = {"Hello there, ","Hi there, ","Hello, "}
 						Chat(Responses[math.random(1,#Responses)]..Name.."!")
-						AuthorizedPlayer[Speaker].LastMessageTheme = "Greeting"
+						AuthorizedChatters[Speaker].LastMessageTheme = "Greeting"
 					end
-					if AuthorizedPlayer[Speaker].LastMessageTheme == "Greeting" then
+					if AuthorizedChatters[Speaker].LastMessageTheme == "Greeting" then
 						Chat("You seem to be greeting me alot. You must be happy to see me")
 					end
 				end
@@ -447,10 +447,10 @@ if TextChatService then
 				end
 				if Message == ":d" or Message == ":D" or Message==":)" or Message==":>" or Message==":]" then
 					Chat(":D")
-					if AuthorizedPlayer[Speaker].LastMessageTheme == "Emotion" then
+					if AuthorizedChatters[Speaker].LastMessageTheme == "Emotion" then
 						Chat("You seem happy today, "..Name.."!")
 					end
-					AuthorizedPlayer[Speaker].LastMessageTheme = "Emotion"                
+					AuthorizedChatters[Speaker].LastMessageTheme = "Emotion"                
 				end
 				if string.match(Message,"actstand") and Player.Character.Humanoid.Sit == true then
 					Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping,true)
@@ -504,7 +504,7 @@ if TextChatService then
 					Help()
 					Process = true
 				end
-				if AuthorizedPlayer[Speaker].LastMessageTheme == "Directed" then
+				if AuthorizedChatters[Speaker].LastMessageTheme == "Directed" then
 					if string.find(Message,"what do you") and string.find(Message,"think") then
 						local Responses = {"I am not quite sure.",
 							"I couldn't tell you, to be honest.","I don't know. What about you, "..Name.."?",}
@@ -554,7 +554,7 @@ if MU then
 		LookAt()
 		Chat(Greetings[math.random(1,#Greetings)]..", Friend!")
 		task.wait(1)
-		AskWellbeing("Friend")
+		AskWellbeing("Friend","MrsUnvaccinated")
 		task.wait(2)	
 	end
 end
