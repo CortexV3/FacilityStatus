@@ -128,7 +128,11 @@ function WanderCast(Pos)
 			Chat(Res.Instance.Parent.Name.." is in front of me")
 		end
 		local Look = (CFrame.lookAt(Res.Position,game.Players.LocalPlayer.Character.PrimaryPart.Position)) * CFrame.new(0,0,-2)
-		game.Players.LocalPlayer.Character.Humanoid:MoveTo(Look.Position)
+		if Res.Distance <= 2 then
+			WanderCast(game.Players.LocalPlayer.Character.PrimaryPart.CFrame * CFrame.new(math.random(-10,10),0,0))
+		else
+			game.Players.LocalPlayer.Character.Humanoid:MoveTo(Look.Position)
+		end
 	end
 end
 
