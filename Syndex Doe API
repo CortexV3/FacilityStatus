@@ -114,7 +114,7 @@ function GetRand(Pos)
 		if P ~= Player and P.Character and P.Character.PrimaryPart then
 			table.insert(List,{
 				["Position"] = P.Character.PrimaryPart.Position,
-				["Name"] = SpecialCharacters[P.Name] and SpecialCharacters[P.Name].Names or P.Name
+				["Name"] = SpecialCharacters[P.Name] and SpecialCharacters[P.Name].Names[math.random(1,#SpecialCharacters[P.Name].Names)] or P.Name
 			})
 		end
 	end
