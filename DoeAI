@@ -74,7 +74,10 @@ end
 
 local PathService = game:GetService("PathfindingService")
 
-function LookRandom(Pos)
+function LookRandom(Pos,AddPosToCharacter)
+	if AddPosToCharacter then
+		Pos = Player.Character.PrimaryPart.Position + Pos
+	end
 	local ForwardVector = (Pos - Player.Character.PrimaryPart.Position).Unit
 	local RightVector =  ForwardVector:Cross(Vector3.new(0,1,0))
 	for i = 0,1,0.1 do
@@ -96,7 +99,7 @@ function GetLookingAtPlayer()
 	local Result = game.Workspace:Raycast(O,Dr,r)
 	if Result then
 		if (Player.Character.PrimaryPart.Position - Result.Position).Magnitude > 2 then
-			LookRandom(Result.Position)
+			LookRandom(Result.Position,false)
 		elseif not Player:FindFirstChild("ChatCD") then
 			local C = Instance.new("StringValue",Player)
 			C.Name = "ChatCD"
@@ -122,7 +125,7 @@ function WanderCast(Pos)
 	if Res then
 		local Look = CFrame.lookAt(Res.Position,Player.Character.PrimaryPart.Position) * CFrame.new(0,0,-2)
 		if Res.Distance <= 2 then
-			LookRandom(Vector3.new(math.random(-200,200),0,math.random(-200,200)))
+			LookRandom(Vector3.new(math.random(-200,200),0,math.random(-200,200)),true)
 		else
 			if Res.Instance.CanCollide == false then
 				table.insert(Ignore,Res.Instance)
@@ -131,7 +134,7 @@ function WanderCast(Pos)
 				Chat(Res.Instance.Parent.Name.." is in front of me")
 			end
 			if math.random(1,10) > 6 then
-				LookRandom(Vector3.new(math.random(-200,200),0,math.random(-200,200)))
+				LookRandom(Vector3.new(math.random(-200,200),0,math.random(-200,200)),true)
 			end
 			game.Players.LocalPlayer.Character.Humanoid:MoveTo(Look.Position)
 		end
@@ -182,7 +185,7 @@ function GetRand(Pos)
 			local PTarget = game.Players:FindFirstChild(PlayerSelected.Name)
 			if math.random(2,10) >= 6 and PTarget and PTarget.Character and PTarget.Character.PrimaryPart then
 				if (PTarget.Character.PrimaryPart.Position - Player.Character.PrimaryPart.Position).Magnitude <= 8 then
-					LookRandom(PTarget.Character.PrimaryPart.Position)
+					LookRandom(PTarget.Character.PrimaryPart.Position,false)
 					Chat(Randoms[math.random(1,#Randoms)])
 				end
 			end
@@ -250,7 +253,7 @@ end
 
 if MU and not RayCast2() then
 	repeat 
-		LookRandom(Vector3.new(math.random(-200,200),0,math.random(-200,200)))
+		LookRandom(Vector3.new(math.random(-200,200),0,math.random(-200,200)),true)
 		task.wait(4)
 	until RayCast2()
 end
@@ -613,7 +616,7 @@ while Enabled do
 		if Player.Character and Player.Character.PrimaryPart then
 			if Player.Character.PrimaryPart.Velocity.Magnitude <= 0.1 then
 				if math.random(1,10) >= 7 then
-					LookRandom((Player.Character.PrimaryPart.Position + Vector3.new(math.random(-50,50),0,math.random(-50,50))))
+					LookRandom(Vector3.new(math.random(-50,50),0,math.random(-50,50)),true)
 					task.wait(1)
 				else
 					GetRand(Player.Character.PrimaryPart.Position + Vector3.new(math.random(-50,50),0,math.random(-50,50)))
@@ -706,7 +709,7 @@ while Enabled do
 								until Count >= 10 or MU.Character.PrimaryPart.Velocity.Magnitude > 0.01
 							else	
 								if math.random(1,10) >= 8 then
-									LookRandom((Player.Character.PrimaryPart.Position + Vector3.new(math.random(-50,50),0,math.random(-50,50))))
+									LookRandom(Vector3.new(math.random(-50,50),0,math.random(-50,50)),true)
 									task.wait(4)
 								else
 									LookAt()
