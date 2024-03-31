@@ -117,7 +117,6 @@ function GetLookingAtPlayer()
 			C.Name = "ChatCD"
 			game:GetService("Debris"):AddItem(C,60)
 			local Name = AuthorizedChatters[MU.Name].Names[math.random(1,#AuthorizedChatters[MU.Name].Names)]
-
 			Chat("You are looking at me, "..Name.."?")
 		end
 	end
@@ -555,7 +554,7 @@ function CheckPartMember()
 	if PartMember and not ObjectCanSee then
 		if PartMember:FindFirstChild("Humanoid") then
 			local PL = game.Players:GetPlayerFromCharacter(PartMember)
-			if PL then
+			if PL and not AuthorizedChatters[PL.Name] then
 				Chat(PL.Name.." was in my way.")
 				PartMember = nil
 				ObjectCanSee = true
