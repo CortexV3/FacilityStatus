@@ -146,7 +146,8 @@ function WanderCast(Pos)
 				table.insert(Ignore,Res.Instance)
 			end
 			if Res.Instance.Parent:FindFirstChild("Humanoid") and math.random(1,20) > 17 then
-				Chat(Res.Instance.Parent.Name.." is in front of me")
+				local Name = AuthorizedChatters[Res.Instance.Parent.Name] and AuthorizedChatters[Res.Instance.Parent.Name].Names[math.random(1,#AuthorizedChatters[Res.Instance.Parent.Name].Names)] or Res.Instance.Parent.Name
+				Chat(Name.." is in front of me")	
 			end
 			if math.random(1,10) > 6 then
 				LookRandom(Vector3.new(math.random(-200,200),0,math.random(-200,200)),true)
