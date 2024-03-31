@@ -29,6 +29,17 @@ end
 local ElapsedAFKTime = 0
 local DoeVersion = "Doe V3"
 
+local AuthorizedChatters = {
+
+	["MrsUnvaccinated"] = {
+		["Names"] = {"Best Friend","Friend"}
+	},
+	["MotherAPI"] = {
+		["Names"] = {"Mom","Mother"}
+	}
+
+}
+
 function GetTools()
 	pcall(function()
 		local PTool = Player.Character:FindFirstChildWhichIsA("Tool")
@@ -147,7 +158,7 @@ function GetRand(Pos)
 
 	local List = {}
 	for i,P in pairs(game.Players:GetChildren()) do
-		if P ~= Player and P.Character and P.Character.PrimaryPart and P.Name ~= "MrsUnvaccinated" then
+		if P ~= Player and P.Character and P.Character.PrimaryPart and not AuthorizedChatters[P.Name] then
 			table.insert(List,{
 				["Position"] = P.Character.PrimaryPart.Position,
 				["Name"] = P.Name
@@ -344,10 +355,10 @@ if TextChatService then
 	if MessageRemote then
 		ChatServiceTab = MessageRemote.OnClientEvent:Connect(function(Inputted)
 			local Speaker = Inputted.FromSpeaker
-			if MU and Speaker == AuthorizedPlayer and not Process and Player.Character and game.Players:FindFirstChild(AuthorizedPlayer) then
+			if AuthorizedChatters[Speaker] and not Process and Player.Character and game.Players:FindFirstChild(AuthorizedChatters[Speaker]) then
 				local Message = string.lower(Inputted.Message)
 				if ElapsedAFKTime > 100 then
-					Chat("Glad to see you have returned, Friend!")
+					Chat("Glad to see you have returned, "..AuthorizedChatters[Speaker].Names[math.random(1,#AuthorizedChatters[Speaker].Names)].. "!")
 				end
 
 				ElapsedAFKTime = 0
@@ -375,7 +386,7 @@ if TextChatService then
 						end
 					end
 					if AnswerType == "Positive" then
-						Chat("That is good to hear, Friend!")
+						Chat("That is good to hear, "..AuthorizedChatters[Speaker].Names[math.random(1,#AuthorizedChatters[Speaker].Names)].."!")
 					elseif AnswerType == "Negative" then
 						Chat("I am sorry to hear that you aren't alright.")
 					end
@@ -386,29 +397,24 @@ if TextChatService then
 					LastMessageTheme = "Directed"
 				end
 				if Message == "doe?" or Message == "doey?" then
-					local Responses = {", Friend?","?"}
+					local Responses = {", "..AuthorizedChatters[Speaker].Names[math.random(1,#AuthorizedChatters[Speaker].Names)].."?","?"}
 					Chat("Yes"..Responses[math.random(1,#Responses)])
 					LastMessageTheme = "Directed"
 				end
 				if (string.find(Message,"doe") or string.find(Message,"doey")) and (string.find(Message,"how are doing") or string.find(Message,"how are you") or string.find(Message,"how are ya")) then
-					local ResponsesName = {", Friend.","."}
+					local ResponsesName = {", "..AuthorizedChatters[Speaker].Names[math.random(1,#AuthorizedChatters[Speaker].Names)]..".","."}
 					local Responses = {"I am doing alright","I am well","I am good"}
 					AskWellbeing()
 					return
 				end
-				if Message == ">:[" or Message == ">:(" then
-					local Responses = {"You seem upset, Friend?","Is everything alright, Friend?"}
+				if Message == ">:[" or Message == ">:(" or Message == ":(" or Message == ":<" or Message == ":[" then
+					local Responses = {"You seem upset, "..AuthorizedChatters[Speaker].Names[math.random(1,#AuthorizedChatters[Speaker].Names)].."?","Is everything alright, "..AuthorizedChatters[Speaker].Names[math.random(1,#AuthorizedChatters[Speaker].Names)].."?"}
 					Chat(Responses[math.random(1,#Responses)])
 					LastMessageTheme = "Emotion"
 				end
-				if Message == ":(" or Message == ":<" or Message == ":[" then
-					local Responses = {"You seem upset, Friend?","Is everything alright, Friend?"}
-					Chat(Responses[math.random(1,#Responses)])
-					LastMessageTheme = "EmotionUnwell"
-				end
 
 				if Message == "doe!" or Message == "doey!" then
-					Chat("Friend!")
+					Chat(AuthorizedChatters[Speaker].Names[math.random(1,#AuthorizedChatters[Speaker].Names)].."!")
 				end
 
 				if string.match(Message,"soup eggs") then
@@ -417,8 +423,8 @@ if TextChatService then
 				if (string.find(Message, "hello ") or string.find(Message, "hai") or
 					string.find(Message, "hi ") or string.find(Message, "hey ")) then
 					if LastMessageTheme == "Directed" then
-						local Responses = {"Hello there, Friend!","Hi there, Friend!","Hello, Friend!"}
-						Chat(Responses[math.random(1,#Responses)])
+						local Responses = {"Hello there, ","Hi there, ","Hello, "}
+						Chat(Responses[math.random(1,#Responses)]..AuthorizedChatters[Speaker].Names[math.random(1,#AuthorizedChatters[Speaker].Names)].."!")
 						LastMessageTheme = "Greeting"
 					end
 					if LastMessageTheme == "Greeting" then
@@ -439,7 +445,7 @@ if TextChatService then
 				if Message == ":d" or Message == ":D" or Message==":)" or Message==":>" or Message==":]" then
 					Chat(":D")
 					if LastMessageTheme == "Emotion" then
-						Chat("You seem happy today, Friend!")
+						Chat("You seem happy today, "..AuthorizedChatters[Speaker].Names[math.random(1,#AuthorizedChatters[Speaker].Names)].."!")
 					end
 					LastMessageTheme = "Emotion"                
 				end
@@ -453,7 +459,7 @@ if TextChatService then
 					Process = true
 				end
 				if string.match(Message,"ye") and Question == "Sit" then
-					Chat("Thank you, Friend!")
+					Chat("Thank you, "..AuthorizedChatters[Speaker].Names[math.random(1,#AuthorizedChatters[Speaker].Names)].."!")
 					Player.Character.Humanoid.Sit = true
 					Process = true
 				end
@@ -462,10 +468,10 @@ if TextChatService then
 						if PartMember:FindFirstChild("Humanoid") then
 							Chat("The object I am looking at is a Humanoid Model called "..PartMember.Name..".")
 							if game.Players:GetPlayerFromCharacter(PartMember) then
-								Chat("It seams this Humanoid Model is a Player Character.")
+								Chat("It seems this Humanoid Model is a Player Character.")
 							end
 						else
-							Chat("The object I am looking at is called"..PartMember.Name,".")
+							Chat("The object I am looking at is "..PartMember.Name,".")
 						end
 					else
 						Chat("No instance detected.")        
@@ -474,7 +480,7 @@ if TextChatService then
 				if string.match(Message,"actpiggyback") then
 					PiggyBackEnabled = not PiggyBackEnabled
 					if PiggyBackEnabled then
-						local SeatedChats = {"That's more comfortable","This seat is comfy.","Hey, Friend, were sitting together now!","",":D"}
+						local SeatedChats = {"That's more comfortable","This seat is comfy.","Hey, "..AuthorizedChatters[Speaker].Names[math.random(1,#AuthorizedChatters[Speaker].Names)]..", were sitting together now!","",":D"}
 						local Chattopic = SeatedChats[math.random(1,#SeatedChats)]
 						if Chattopic ~= "" then
 							Chat(Chattopic)
@@ -485,9 +491,9 @@ if TextChatService then
 				end
 				if string.match(Message,"actcheckview") then
 					if RayCast() then
-						Chat("I can see you, Friend.")
+						Chat("I can see you, "..AuthorizedChatters[Speaker].Names[math.random(1,#AuthorizedChatters[Speaker].Names)]..".")
 					else
-						Chat("I cannot see you, Friend.")
+						Chat("I cannot see you, "..AuthorizedChatters[Speaker].Names[math.random(1,#AuthorizedChatters[Speaker].Names)]..".")
 					end
 					Process = true
 				end
@@ -498,49 +504,23 @@ if TextChatService then
 				if LastMessageTheme == "Directed" then
 					if string.find(Message,"what do you") and string.find(Message,"think") then
 						local Responses = {"I am not quite sure.",
-							"I couldn't tell you, to be honest.","I don't know. What about you, Friend?",}
+							"I couldn't tell you, to be honest.","I don't know. What about you, "..AuthorizedChatters[Speaker].Names[math.random(1,#AuthorizedChatters[Speaker].Names)].."?",}
 						Chat(Responses[math.random(1,#Responses)])
 					end
 					if string.find(Message,"sorry") and not string.find(Message,"not sorry") then
-						local Responses = {"Its okay accidents happen.","You don't have to apologize, Friend.","Everything is okay, Friend.","No worries.","It's alright, Friend."}
+						local Responses = {"Its okay accidents happen.","You don't have to apologize, "....AuthorizedChatters[Speaker].Names[math.random(1,#AuthorizedChatters[Speaker].Names)]..".","Everything is okay, "..AuthorizedChatters[Speaker].Names[math.random(1,#AuthorizedChatters[Speaker].Names)]..".","No worries.","It's alright, "..AuthorizedChatters[Speaker].Names[math.random(1,#AuthorizedChatters[Speaker].Names)].."."}
 						Chat(Responses[math.random(1,#Responses)])
 					end
 				end
 				if string.find(Message,"huh") or Message == "?" then
 					local Responses = {"Thinking are you?",
-						"Is there a problem, Friend?","Everything is okay, Friend?",
-						"Hmmm.","What's on your mind, Friend?"}
+						"Is there a problem, "..AuthorizedChatters[Speaker].Names[math.random(1,#AuthorizedChatters[Speaker].Names)].."?","Everything is okay, "..AuthorizedChatters[Speaker].Names[math.random(1,#AuthorizedChatters[Speaker].Names)].."?",
+						"Hmmm.","What's on your mind, "..AuthorizedChatters[Speaker].Names[math.random(1,#AuthorizedChatters[Speaker].Names)].."?"}
 					Chat(Responses[math.random(1,#Responses)])
 				end
 				if string.match(Message,"actquit") then
 					Chat("Program will now quit.")
 					Enabled = false
-				end
-
-				if string.match(Message,"actsleep") then
-					Chat("Okay I will sleep now. Goodnight, Friend!")
-					task.wait(0.1)
-					SleepEnabled = true
-					Player.Character.Humanoid.PlatformStand = true
-					for i = 1,2 do
-						Player.Character:PivotTo(Player.Character.PrimaryPart.CFrame * CFrame.Angles(math.rad(90),0,0))
-					end
-					repeat
-						Player.Character.Humanoid.PlatformStand = true
-						task.wait()
-					until not SleepEnabled
-					Player.Character.Humanoid.PlatformStand = false
-				end
-				if string.match(Message,"actwake") then
-					SleepEnabled = false
-					Chat("I am awake now!")
-				end
-				if string.match(Message,"actcometo") then
-					Player.Character:PivotTo(MU.Character.PrimaryPart.CFrame)
-					local RandomTable = {4,-4,-5,5,-6,6}
-					WalkTo(RandomTable[math.random(1,#RandomTable)])
-					Player.Character.Humanoid.MoveToFinished:Wait()
-					LookAt()
 				end
 			end
 		end)
