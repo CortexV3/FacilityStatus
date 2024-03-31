@@ -1,0 +1,304 @@
+
+repeat task.wait() until game.Loaded
+local Player = game.Players.LocalPlayer
+
+local Character,RootPart,Humanoid = nil,nil,nil
+
+local Enabled = true
+
+local AuthorizedPlayer = (game.Players:FindFirstChild("MrsUnvaccinated") and game.Players:FindFirstChild("MrsUnvaccinated").Name) or ""
+
+local Follow = false
+local Ignore = {}
+
+local ToolBox = Player:FindFirstChild("Backpack")
+local PartMember = nil
+
+function Chat(MSG)
+	task.wait(2)
+	local args = {[1] = MSG,[2] = "All"}
+	game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(unpack(args))
+end
+
+local SpecialCharacters = {
+	["MrsUnvaccinated"] = {
+		["Names"] = {"Friend"}
+	},
+	["MotherAPI"] = {
+		["Names"] = {"Mom","Mother"}
+	}
+}
+
+function GetTools(Char)
+	if Humanoid then
+		if Char then
+			local PTool = Player.Character:FindFirstChildWhichIsA("Tool")
+			local MTool = Char:FindFirstChildWhichIsA("Tool")
+			Humanoid:UnequipTools()
+			if PTool then
+				if MTool then
+					if MTool.Name ~= PTool.Name then
+						Humanoid:EquipTool(ToolBox:FindFirstChild(MTool.Name)) 
+					end
+				end
+			elseif MTool then
+				Humanoid:EquipTool(ToolBox:FindFirstChild(MTool.Name))
+			end
+		else
+			local Tools = {}
+			for i,P in pairs(ToolBox:GetChildren()) do
+				if P:IsA("Tool") then
+					table.insert(Tools,P)
+				end
+			end
+			if #Tools > 0 then
+				Humanoid:EquipTool(Tools[math.random(1,#Tools)])
+			end
+		end
+	end
+end
+
+function GetLookingAtPlayer(Char)
+	local O = Char:FindFirstChild("HumanoidRootPart").Position
+	local Dst = (Char:FindFirstChild("HumanoidRootPart").CFrame * CFrame.new(0,0,-10)).Position
+	local Dr = (Dst - O)
+	local r = RaycastParams.new()
+	r.FilterDescendantsInstances = {Char}
+	r.FilterType = Enum.RaycastFilterType.Exclude
+	local Result = game.Workspace:Raycast(O,Dr,r)
+	if Result then
+		if (RootPart.Position - Result.Position).Magnitude > 2 then
+			return true
+		end
+	end
+end
+
+function WanderCast(Pos)
+	if not Alive() or not Character then
+		return
+	end
+	if not table.find(Ignore,Character) then
+		table.insert(Ignore,Character)
+	end
+	local O = RootPart.Position
+	local D = Pos
+
+	local RP = RaycastParams.new()
+	RP.FilterDescendantsInstances = Ignore
+	RP.FilterType = Enum.RaycastFilterType.Exclude
+
+	local LookVector = CFrame.lookAt(O,D)
+	local Res = workspace:Raycast(O,(D-O),RP)
+	if Res and Humanoid and RootPart then
+		local Look = CFrame.lookAt(Res.Position,RootPart.Position) * CFrame.new(0,0,-2)
+		if Res.Instance.CanCollide == false then
+			table.insert(Ignore,Res.Instance)
+		end
+		if Res.Instance.Parent:FindFirstChild("Humanoid") and math.random(1,20) > 17 then
+			Chat(Res.Instance.Parent.Name.." is in front of me")
+		end
+		if math.random(1,10) > 6 or Res.Distance <= 2 then
+			LookAtPosition(GetRootWithOffset(VectorRandom(200)))
+		end
+
+		Humanoid:MoveTo(Look.Position)
+	end
+end
+
+
+
+function GetRand(Pos)
+
+	local List = {}
+	for i,P in pairs(game.Players:GetChildren()) do
+		if P ~= Player and P.Character and P.Character.PrimaryPart then
+			table.insert(List,{
+				["Position"] = P.Character.PrimaryPart.Position,
+				["Name"] = SpecialCharacters[P.Name] and SpecialCharacters[P.Name].Names or P.Name
+			})
+		end
+	end
+	if math.random(1,10) > 5 or #List <= 0 then
+		WanderCast(Pos)
+	else
+
+		local PlayerSelected = List[math.random(1,#List)]
+
+		WanderCast(PlayerSelected.Position)
+
+		local s = nil
+
+		local Randoms = {
+			"Hello, "..PlayerSelected.Name..".",
+			"Hey there, "..PlayerSelected.Name..".",
+			":>",
+			":D",
+			"Nice avatar, "..PlayerSelected.Name.."!",
+			"hmmm.",
+			"I like this place.",
+			"Interesting outfit, "..PlayerSelected.Name,
+			"This place is something else.",
+			"Hi there.",
+			"I might walk over there.",
+			":)",
+			"Theres alot to look at here.",
+			"I want to live here.",
+			"Hehe",
+		}
+		s = Humanoid.MoveToFinished:Connect(function()
+			local PTarget = game.Players:FindFirstChild(PlayerSelected.Name)
+			if math.random(2,10) >= 6 and PTarget and PTarget.Character and PTarget.Character.PrimaryPart and RootPart then
+				if (PTarget.Character.PrimaryPart.Position - RootPart.Position).Magnitude <= 8 then
+					LookAtPosition(PTarget.Character.PrimaryPart.Position)
+					Chat(Randoms[math.random(1,#Randoms)])
+				end
+			end
+			s:Disconnect()		
+		end)
+		task.wait(2)
+	end
+end
+
+function LookAtPosition(Pos)
+	if not Pos or not RootPart or not Character then
+		return
+	end
+	local ForwardVector = (Pos - RootPart.Position).Unit
+	local RightVector =  ForwardVector:Cross(Vector3.new(0,1,0))
+	for i = 0,1,0.1 do
+		task.wait()
+		Character:PivotTo(RootPart.CFrame:Lerp(CFrame.fromMatrix(RootPart.Position,RightVector,Vector3.new(0,1,0)),i))
+	end
+end
+
+Chat("Game is finally loaded.")
+
+function ClimbLadder()
+	if not RootPart or not Humanoid then
+		return
+	end
+	local Goal = RootPart.CFrame * CFrame.new(0,0,-10)
+	Humanoid:MoveTo(Goal.Position) 
+end
+
+-----Chat Commands
+
+function Help()
+	Chat("Current available commands: ActObjectInfo,ActPiggyback,ActToolCopy,ActSee ActComeTo ActSit ActCheckView ActStand ActFollow ActLook ActHelp ActStatus ActSleep ActWake")
+end
+
+local LastMessageTheme = ""
+
+function AskWellbeing()
+	local ResponsesName = {", Friend.","."}
+	local Responses = {"I am alright","I am well","I am good"}
+	if math.random(1,5) >= 3 then
+		if LastMessageTheme ~= "" then
+			Chat(Responses[math.random(1,#Responses)]..ResponsesName[math.random(1,#ResponsesName)].." How are you doing, Friend?")
+		else
+			Chat(" How are you doing, Friend?")
+		end
+		LastMessageTheme = "Wellbeing"
+	elseif LastMessageTheme == "Directed" then
+		Chat(Responses[math.random(1,#Responses)]..ResponsesName[math.random(1,#ResponsesName)])
+		LastMessageTheme = "Directed"
+	end
+end
+
+local TextChatService,ChatServiceTab = game.ReplicatedStorage:FindFirstChild("DefaultChatSystemChatEvents"),nil
+
+if TextChatService then
+	local MessageRemote = TextChatService:FindFirstChild("OnMessageDoneFiltering")
+	if MessageRemote then
+		ChatServiceTab = MessageRemote.OnClientEvent:Connect(function(Inputted)
+			local Speaker = Inputted.FromSpeaker
+
+			if SpecialCharacters[Speaker] and Character and game.Players:FindFirstChild(Speaker) then
+				local Message = string.lower(Inputted.Message)
+				if string.match(Message,"actquit") then
+					Chat("Program will now quit.")
+					Enabled = false
+				end
+				print(Speaker.." said: "..Message)
+			end
+		end)
+	end
+end
+
+function GetSeat()
+	local MaxDist = 100
+	local Nearest = nil
+	for i,Seat in pairs(workspace:GetDescendants()) do
+		if Seat:IsA("Seat") then
+			if not Seat.Occupant and (Character.PrimaryPart.Position - Seat.Position).Magnitude < MaxDist then
+				MaxDist = (Character.PrimaryPart.Position - Seat.Position).Magnitude
+				Nearest = Seat
+			end
+		end
+	end
+	if Nearest then
+		repeat
+			Character.Humanoid:MoveTo(Nearest.Position)
+			if (Nearest.Position - Character.PrimaryPart.Position).Magnitude < 2 then
+				if Nearest:FindFirstChildWhichIsA("ProximityPrompt") then
+					Nearest:FindFirstChildWhichIsA("ProximityPrompt"):InputHoldBegin()
+				else
+					Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping,true)
+				end
+				task.wait(1)
+			end
+			task.wait()
+		until Humanoid.Sit or Humanoid
+		Nearest:FindFirstChildWhichIsA("ProximityPrompt"):InputHoldEnd()
+	end
+end
+
+function Alive()
+	return (Humanoid and Humanoid.Health > 0 and true) or false
+
+end
+
+function NotMoving(CharacterRoot)
+
+	return (CharacterRoot and CharacterRoot.Velocity.Magnitude <= 0.1 and true) or false
+
+end
+
+function GetRootWithOffset(Offset)
+
+	return (RootPart and RootPart.Position + Offset) or Vector3.new(0,0,0)
+
+end
+
+function VectorRandom(Range)
+	return Vector3.new(math.random(-Range,Range),0,math.random(-Range,Range))
+end
+
+while Enabled do
+	if not Enabled then
+		break
+	end
+	if Character and RootPart then
+		if not RootPart or not Humanoid then
+			RootPart = Character:FindFirstChild("HumanoidRootPart")
+			Humanoid = Character:FindFirstChild("Humanoid")
+		else
+			if NotMoving(RootPart) then
+				if math.random(1,10) >= 7 then
+					LookAtPosition(GetRootWithOffset(VectorRandom(50)),true)
+					task.wait(1)
+				else
+					GetRand(GetRootWithOffset(VectorRandom(50)))
+				end
+			end
+		end
+	else
+		Character = Player.Character
+	end
+	task.wait()
+
+end
+if ChatServiceTab then
+	ChatServiceTab:Disconnect()
+end
+script:Destroy()
