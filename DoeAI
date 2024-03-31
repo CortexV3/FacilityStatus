@@ -370,9 +370,21 @@ if TextChatService then
 				end
 
 				ElapsedAFKTime = 0
+				
+				if string.match(Message,"follow me doe") then
+					if Speaker ~= AuthorizedPlayer then
+						AuthorizedPlayer = Speaker
+						MU = game.Players:FindFirstChild(Speaker)
+					end
+					Chat("Okay I will follow you, "..Name..".")
+				end
 
 				if string.match(Message,"actfollow") then
 					Follow = not Follow
+					if Speaker ~= AuthorizedPlayer then
+						AuthorizedPlayer = Speaker
+						MU = game.Players:FindFirstChild(Speaker)
+					end
 					Chat("Following is now set to "..tostring(Follow)..".")
 				end
 				if string.match(Message,"acttoolcopy") then
@@ -613,7 +625,7 @@ while Enabled do
 		end
 	end
 
-	if not MU or (MU and AuthorizedPlayer ~= "MrsUnvaccinated" and game.Players:FindFirstChild("MrsUnvacinated")) then
+	if not MU or (MU and not AuthorizedChatters[AuthorizedPlayer] and game.Players:FindFirstChild("MrsUnvacinated")) then
 		AuthorizedPlayer = (game.Players:FindFirstChild("MrsUnvaccinated") and game.Players:FindFirstChild("MrsUnvaccinated").Name) or ""
 		if AuthorizedPlayer ~= "" then			
 			MU = game.Players:FindFirstChild(AuthorizedPlayer)
