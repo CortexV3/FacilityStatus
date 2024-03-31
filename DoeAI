@@ -129,7 +129,7 @@ function WanderCast(Pos)
 		end
 		local Look = (CFrame.lookAt(Res.Position,game.Players.LocalPlayer.Character.PrimaryPart.Position)) * CFrame.new(0,0,-2)
 		if Res.Distance <= 2 then
-			WanderCast(game.Players.LocalPlayer.Character.PrimaryPart.CFrame * CFrame.new(math.random(-10,10),0,0))
+			WanderCast((game.Players.LocalPlayer.Character.PrimaryPart.CFrame * CFrame.new(math.random(-10,10),0,0)).Position)
 		else
 			game.Players.LocalPlayer.Character.Humanoid:MoveTo(Look.Position)
 		end
