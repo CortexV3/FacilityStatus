@@ -119,18 +119,20 @@ function WanderCast(Pos)
 
 	local LookVector = CFrame.lookAt(O,D)
 	local Res = workspace:Raycast(O,(D-O),RP)
-	LookRandom(Vector3.new(math.random(-200,200),0,math.random(-200,200)))
 	if Res then
-		if Res.Instance.CanCollide == false then
-			table.insert(Ignore,Res.Instance)
-		end
-		if Res.Instance.Parent:FindFirstChild("Humanoid") and math.random(1,20) > 17 then
-			Chat(Res.Instance.Parent.Name.." is in front of me")
-		end
-		local Look = (CFrame.lookAt(Res.Position,game.Players.LocalPlayer.Character.PrimaryPart.Position)) * CFrame.new(0,0,-2)
+		local Look = CFrame.lookAt(Res.Position,Player.Character.PrimaryPart.Position) * CFrame.new(0,0,-2)
 		if Res.Distance <= 2 then
-			WanderCast((game.Players.LocalPlayer.Character.PrimaryPart.CFrame * CFrame.new(math.random(-10,10),0,0)).Position)
+			LookRandom(Vector3.new(math.random(-200,200),0,math.random(-200,200)))
 		else
+			if Res.Instance.CanCollide == false then
+				table.insert(Ignore,Res.Instance)
+			end
+			if Res.Instance.Parent:FindFirstChild("Humanoid") and math.random(1,20) > 17 then
+				Chat(Res.Instance.Parent.Name.." is in front of me")
+			end
+			if math.random(1,10) > 6 then
+				LookRandom(Vector3.new(math.random(-200,200),0,math.random(-200,200)))
+			end
 			game.Players.LocalPlayer.Character.Humanoid:MoveTo(Look.Position)
 		end
 	end
