@@ -32,10 +32,12 @@ local DoeVersion = "Doe V3"
 local AuthorizedChatters = {
 
 	["MrsUnvaccinated"] = {
-		["Names"] = {"Best Friend","Friend"}
+		["Names"] = {"Best Friend","Friend"},
+		["LastMessageTheme"] = ""
 	},
 	["MotherAPI"] = {
-		["Names"] = {"Mom","Mother"}
+		["Names"] = {"Mom","Mother"},
+		["LastMessageTheme"] = ""
 	}
 
 }
@@ -330,21 +332,19 @@ function Help()
 	Chat("Current available commands: ActObjectInfo,ActPiggyback,ActToolCopy,ActSee ActComeTo ActSit ActCheckView ActStand ActFollow ActLook ActHelp ActStatus ActSleep ActWake")
 end
 
-local LastMessageTheme = ""
-
-function AskWellbeing()
-	local ResponsesName = {", Friend.","."}
+function AskWellbeing(Name,User)
+	local ResponsesName = {", "..Name..".","."}
 	local Responses = {"I am doing alright","I am well","I am good"}
 	if math.random(1,5) >= 3 then
-		if LastMessageTheme ~= "" then
-			Chat(Responses[math.random(1,#Responses)]..ResponsesName[math.random(1,#ResponsesName)].." How are you doing, Friend?")
+		if AuthorizedPlayer[User].LastMessageTheme ~= "" then
+			Chat(Responses[math.random(1,#Responses)]..ResponsesName[math.random(1,#ResponsesName)].." How are you doing, "..Name.."?")
 		else
-			Chat(" How are you doing, Friend?")
+			Chat(" How are you doing, "..Name.."?")
 		end
-		LastMessageTheme = "Wellbeing"
-	elseif LastMessageTheme == "Directed" then
+		AuthorizedPlayer[User].LastMessageTheme = "Wellbeing"
+	elseif AuthorizedPlayer[User].LastMessageTheme == "Directed" then
 		Chat(Responses[math.random(1,#Responses)]..ResponsesName[math.random(1,#ResponsesName)])
-		LastMessageTheme = "Directed"
+		AuthorizedPlayer[User].LastMessageTheme = "Directed"
 	end
 end
 
@@ -374,7 +374,7 @@ if TextChatService then
 					GetToolsCopy = not GetToolsCopy
 					Chat("Tool Copy is now set to "..tostring(GetToolsCopy)..".")
 				end
-				if LastMessageTheme == "Wellbeing" then
+				if AuthorizedPlayer[Speaker].LastMessageTheme == "Wellbeing" then
 					local Positives = {"ok",}
 					local Negatives = {"sad","bad"}
 					local AnswerType = ""
@@ -393,27 +393,27 @@ if TextChatService then
 					elseif AnswerType == "Negative" then
 						Chat("I am sorry to hear that you aren't alright.")
 					end
-					LastMessageTheme = "Directed"
+					AuthorizedPlayer[Speaker].LastMessageTheme = "Directed"
 					return
 				end
 				if string.match(Message,"doe") then
-					LastMessageTheme = "Directed"
+					AuthorizedPlayer[Speaker].LastMessageTheme = "Directed"
 				end
 				if Message == "doe?" or Message == "doey?" then
 					local Responses = {", "..Name.."?","?"}
 					Chat("Yes"..Responses[math.random(1,#Responses)])
-					LastMessageTheme = "Directed"
+					AuthorizedPlayer[Speaker].LastMessageTheme = "Directed"
 				end
 				if (string.find(Message,"doe") or string.find(Message,"doey")) and (string.find(Message,"how are doing") or string.find(Message,"how are you") or string.find(Message,"how are ya")) then
 					local ResponsesName = {", "..Name..".","."}
 					local Responses = {"I am doing alright","I am well","I am good"}
-					AskWellbeing()
+					AskWellbeing(Name)
 					return
 				end
 				if Message == ">:[" or Message == ">:(" or Message == ":(" or Message == ":<" or Message == ":[" then
 					local Responses = {"You seem upset, "..Name.."?","Is everything alright, "..Name.."?"}
 					Chat(Responses[math.random(1,#Responses)])
-					LastMessageTheme = "Emotion"
+					AuthorizedPlayer[Speaker].LastMessageTheme = "Emotion"
 				end
 
 				if Message == "doe!" or Message == "doey!" then
@@ -425,12 +425,12 @@ if TextChatService then
 				end
 				if (string.find(Message, "hello ") or string.find(Message, "hai") or
 					string.find(Message, "hi ") or string.find(Message, "hey ")) then
-					if LastMessageTheme == "Directed" then
+					if AuthorizedPlayer[Speaker].LastMessageTheme == "Directed" then
 						local Responses = {"Hello there, ","Hi there, ","Hello, "}
 						Chat(Responses[math.random(1,#Responses)]..Name.."!")
-						LastMessageTheme = "Greeting"
+						AuthorizedPlayer[Speaker].LastMessageTheme = "Greeting"
 					end
-					if LastMessageTheme == "Greeting" then
+					if AuthorizedPlayer[Speaker].LastMessageTheme == "Greeting" then
 						Chat("You seem to be greeting me alot. You must be happy to see me")
 					end
 				end
@@ -447,10 +447,10 @@ if TextChatService then
 				end
 				if Message == ":d" or Message == ":D" or Message==":)" or Message==":>" or Message==":]" then
 					Chat(":D")
-					if LastMessageTheme == "Emotion" then
+					if AuthorizedPlayer[Speaker].LastMessageTheme == "Emotion" then
 						Chat("You seem happy today, "..Name.."!")
 					end
-					LastMessageTheme = "Emotion"                
+					AuthorizedPlayer[Speaker].LastMessageTheme = "Emotion"                
 				end
 				if string.match(Message,"actstand") and Player.Character.Humanoid.Sit == true then
 					Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping,true)
@@ -504,7 +504,7 @@ if TextChatService then
 					Help()
 					Process = true
 				end
-				if LastMessageTheme == "Directed" then
+				if AuthorizedPlayer[Speaker].LastMessageTheme == "Directed" then
 					if string.find(Message,"what do you") and string.find(Message,"think") then
 						local Responses = {"I am not quite sure.",
 							"I couldn't tell you, to be honest.","I don't know. What about you, "..Name.."?",}
@@ -554,12 +554,12 @@ if MU then
 		LookAt()
 		Chat(Greetings[math.random(1,#Greetings)]..", Friend!")
 		task.wait(1)
-		AskWellbeing()
+		AskWellbeing("Friend")
 		task.wait(2)	
 	end
 end
 
-LastMessageTheme = "Wellbeing"
+AuthorizedPlayer["MrsUnvaccinated"].LastMessageTheme = "Wellbeing"
 
 function GetSeat()
 	local MaxDist = 100
