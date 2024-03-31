@@ -243,16 +243,21 @@ function LookAt()
 	end
 end
 
-
-Chat("I'm here finally.")
+local IGResponses = {
+	"I am here finally.",
+	"I am here.",
+	"The game finally loaded.",
+	"I am in the game now."
+}
+Chat(IGResponses[math.random(1,#IGResponses)])
 task.wait(1)
 if MU then
 	local DF = false
 	if not AuthorizedPlayer then
-		Chat("Gotta wait for "..AuthorizedPlayer)
+		Chat("Gotta wait for my fried.")
 		DF = true
 	else
-		Chat("You're already in the game "..AuthorizedPlayer.."?")
+		Chat("You're already in the game!")
 	end
 	repeat task.wait() until game.Players:FindFirstChild(AuthorizedPlayer)
 	if DF then
@@ -336,15 +341,15 @@ function AskWellbeing(Name,User)
 	local ResponsesName = {", "..Name..".","."}
 	local Responses = {"I am doing alright","I am well","I am good"}
 	if math.random(1,5) >= 3 then
-		if AuthorizedPlayer[User].LastMessageTheme ~= "" then
+		if AuthorizedChatters[User].LastMessageTheme ~= "" then
 			Chat(Responses[math.random(1,#Responses)]..ResponsesName[math.random(1,#ResponsesName)].." How are you doing, "..Name.."?")
 		else
 			Chat(" How are you doing, "..Name.."?")
 		end
-		AuthorizedPlayer[User].LastMessageTheme = "Wellbeing"
-	elseif AuthorizedPlayer[User].LastMessageTheme == "Directed" then
+		AuthorizedChatters[User].LastMessageTheme = "Wellbeing"
+	elseif AuthorizedChatters[User].LastMessageTheme == "Directed" then
 		Chat(Responses[math.random(1,#Responses)]..ResponsesName[math.random(1,#ResponsesName)])
-		AuthorizedPlayer[User].LastMessageTheme = "Directed"
+		AuthorizedChatters[User].LastMessageTheme = "Directed"
 	end
 end
 
@@ -559,7 +564,7 @@ if MU then
 	end
 end
 
-AuthorizedPlayer["MrsUnvaccinated"].LastMessageTheme = "Wellbeing"
+AuthorizedChatters["MrsUnvaccinated"].LastMessageTheme = "Wellbeing"
 
 function GetSeat()
 	local MaxDist = 100
