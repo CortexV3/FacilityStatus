@@ -458,25 +458,10 @@ if TextChatService then
 				end
 				if string.match(Message,"doe say hello to") then
 					local G = string.gsub(Message,"doe say hello to")
-					G = string.gsub(G," ","")
+					lcoal S = string.gsub(G," ","")
 					local Found = nil
 					for i,P in pairs(game.Players:GetChildren()) do
-						if string.match(G,string.lower(P.Name)) then
-							Found = P.Name
-						end
-					end
-					if Found then
-						local NickName = (AuthorizedChatters[Found] and AuthorizedChatters[Found].Names[math.random(1,#AuthorizedChatters[Found].Names)]) or Found
-						local Responses = {"Hello there, ","Hi there, ","Hello, "}
-						Chat(Responses[math.random(1,#Responses)]..NickName.."!")
-					end					
-				end
-				if string.match(Message,"doe say hi to") then
-					local G = string.gsub(Message,"doe say hi to","")
-					G = string.gsub(G," ","")
-					local Found = nil
-					for i,P in pairs(game.Players:GetChildren()) do
-						if string.match(G,string.lower(P.Name)) then
+						if string.find(S,string.lower(P.Name)) then
 							Found = P.Name
 						end
 					end
