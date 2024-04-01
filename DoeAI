@@ -693,12 +693,15 @@ while Enabled do
 				if MU.Character.PrimaryPart.Name ~= "HumanoidRootPart" then
 					MU.Character.PrimaryPart = MU.Character:FindFirstChild("HumanoidRootPart")
 				end
-				if not PiggyBackEnabled and Follow == true and Player.Character.Humanoid.Sit ~= MU.Character.Humanoid.Sit then
-					if Player.Character.Humanoid.Sit == false then
-						GetSeat()
+				if not PiggyBackEnabled and Follow == true then
+					if MU.Character.Humanoid.Sit == true and Player.Character.Humanoid.Sit ~= MU.Character.Humanoid.Sit then
+						if Player.Character.Humanoid.Sit == false then
+							GetSeat()
+						end
 					end
-				elseif Player.Character.Humanoid.Sit == true then
-					Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping,true)
+					if MU.Character.Humanoid.Sit == false and Player.Character.Humanoid.Sit ~= MU.Character.Humanoid.Sit then
+						Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping,true)
+					end
 				end
 			end
 
