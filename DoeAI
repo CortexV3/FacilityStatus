@@ -445,8 +445,8 @@ if TextChatService then
 				if string.match(Message,"soup eggs") then
 					Chat("Soup Eggs in your bed, Soup Eggs on your head. Soup Eggs on your dad instead.")
 				end
-				if (string.find(Message, "hello ") or string.find(Message, "hai") or
-					string.find(Message, "hi ") or string.find(Message, "hey ")) then
+				if (string.match(Message, "hello ") == 1 or string.match(Message, "hai") == 1 or
+					string.match(Message, "hi ") == 1 or string.match(Message, "hey ") == 1) then
 					if AuthorizedChatters[Speaker].LastMessageTheme == "Directed" then
 						local Responses = {"Hello there, ","Hi there, ","Hello, "}
 						Chat(Responses[math.random(1,#Responses)]..Name.."!")
@@ -455,6 +455,21 @@ if TextChatService then
 					if AuthorizedChatters[Speaker].LastMessageTheme == "Greeting" then
 						Chat("You seem to be greeting me alot. You must be happy to see me")
 					end
+				end
+				if string.match(Message."doe say hi to" then
+					local G = string.gsub(Message,"doe say hi to")
+					G = string.gsub(G," ")
+					local Found = nil
+					for i,P in pairs(game.Players:GetChildren()) do
+						if string.match(G,string.lower(P.Name)) then
+							Found = P.Name
+						end
+					end
+					if Found then
+						local NickName = (AuthorizedChatters[Found] and AuthorizedChatters[Found].Names[math.random(1,#AuthorizedChatters[Found].Names)]) or Found
+						local Responses = {"Hello there, ","Hi there, ","Hello, "}
+						Chat(Responses[math.random(1,#Responses)]..NickName.."!")
+					end					
 				end
 				if string.match(Message,"actlook") then
 					Lookatmu = not Lookatmu
