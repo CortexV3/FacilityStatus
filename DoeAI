@@ -679,12 +679,6 @@ while Enabled do
 				end
 				ElapsedAFKTime = 0
 			end
-			if Player.Character and Player.Character.PrimaryPart and Player.Character.PrimaryPart.Name ~= "HumanoidRootPart" then
-				Player.Character.PrimaryPart = Player.Character:FindFirstChild("HumanoidRootPart")
-			end
-			if MU.Character.PrimaryPart.Name ~= "HumanoidRootPart" then
-				MU.Character.PrimaryPart = MU.Character:FindFirstChild("HumanoidRootPart")
-			end
 			if GetToolsCopy then
 				GetTools()
 			end
@@ -692,12 +686,20 @@ while Enabled do
 				task.wait(1)
 				Process = false
 			end
-			if not PiggyBackEnabled and Follow == true and Player.Character.Humanoid.Sit ~= MU.Character.Humanoid.Sit then
-				if Player.Character.Humanoid.Sit == false then
-					GetSeat()
+			if Player.Character and MU.Character and Player.Character.PrimaryPart and MU.Character.PrimaryPart then
+				if Player.Character.PrimaryPart.Name ~= "HumanoidRootPart" then
+					Player.Character.PrimaryPart = Player.Character:FindFirstChild("HumanoidRootPart")
 				end
-			elseif Player.Character.Humanoid.Sit == true then
-				Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping,true)
+				if MU.Character.PrimaryPart.Name ~= "HumanoidRootPart" then
+					MU.Character.PrimaryPart = MU.Character:FindFirstChild("HumanoidRootPart")
+				end
+				if not PiggyBackEnabled and Follow == true and Player.Character.Humanoid.Sit ~= MU.Character.Humanoid.Sit then
+					if Player.Character.Humanoid.Sit == false then
+						GetSeat()
+					end
+				elseif Player.Character.Humanoid.Sit == true then
+					Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping,true)
+				end
 			end
 
 			if Follow == true and not Process and MU.Character.Humanoid.Sit == false and not PiggyBackEnabled then
@@ -716,6 +718,7 @@ while Enabled do
 					Player.Character.HumanoidRootPart.Anchored = false
 					Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping,true)
 				end
+				
 				if GetDistance() <= 6 then
 					if GetDistance() < 3 then
 						if Player.Character.PrimaryPart.Velocity.Magnitude <= 0.01 then
@@ -743,25 +746,25 @@ while Enabled do
 									else
 										LookAt()
 									end
+								end
 							end
 						end
 					end
 				end
-			end
-			if GetDistance() > 6 then
-				if GetDistance() > 35 and MU.Character.Humanoid.Sit == false then
-					Player.Character:PivotTo(MU.Character.PrimaryPart.CFrame)
-				else
-					WalkTo(0)
+				if GetDistance() > 6 then
+					if GetDistance() > 35 and MU.Character.Humanoid.Sit == false then
+						Player.Character:PivotTo(MU.Character.PrimaryPart.CFrame)
+					else
+						WalkTo(0)
+					end
+				end
+				if Player.Character.Humanoid:GetState() == Enum.HumanoidStateType.Climbing then
+					ClimbLadder()
 				end
 			end
-			if Player.Character.Humanoid:GetState() == Enum.HumanoidStateType.Climbing then
-				ClimbLadder()
-			end
 		end
-	end
-end)
-task.wait()
+	end)
+	task.wait()
 
 end
 if ChatServiceTab then
