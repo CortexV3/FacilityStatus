@@ -37,8 +37,12 @@ local AuthorizedChatters = {
 	["MotherAPI"] = {
 		["Names"] = {"Mom","Mother"},
 		["LastMessageTheme"] = ""
-	}
+	},
 
+	["CortexAPI"] = {
+		["Names"] = {"Sentinel Commander"},
+		["LastMessageTheme"] = ""
+	}
 }
 
 function GetTools()
