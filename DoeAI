@@ -418,7 +418,7 @@ if TextChatService then
 					AuthorizedChatters[Speaker].LastMessageTheme = "Directed"
 					return
 				end
-				if string.match(Message,"doe") then
+				if string.find(Message,"doe") then
 					AuthorizedChatters[Speaker].LastMessageTheme = "Directed"
 				end
 				if Message == "doe?" or Message == "doey?" then
@@ -456,8 +456,8 @@ if TextChatService then
 						Chat("You seem to be greeting me alot. You must be happy to see me")
 					end
 				end
-				if string.find(Message,"doe say hello to") then
-					local G = string.gsub(Message,"doe say hello to")
+				if string.match(Message,"doe say hello to") == 1 then
+					local G = string.gsub(Message,"doe say hello to","")
 					local S = string.gsub(G," ","")
 					local Found = nil
 					for i,P in pairs(game.Players:GetChildren()) do
