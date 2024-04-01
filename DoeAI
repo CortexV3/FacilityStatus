@@ -633,6 +633,9 @@ while Enabled do
 
 		if Follow == false or not MU or ElapsedAFKTime >= 170 then
 			if Player.Character and Player.Character.PrimaryPart then
+				if Player.Character.Humanoid.St == true then
+					Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping,true)
+				end
 				if Player.Character.PrimaryPart.Velocity.Magnitude <= 0.1 then
 					if math.random(1,10) >= 7 then
 						LookRandom(Vector3.new(math.random(-50,50),0,math.random(-50,50)),true)
