@@ -463,13 +463,12 @@ if TextChatService then
 					local E = nil
 					for i,P in pairs(game.Players:GetChildren()) do
 						local Lower = string.lower(P.Name)
-						print(S,Lower)
+						print(S,Lower,typeof(S),typeof(Lower))
 						if string.find(Lower,S) then
 							print("Player Found")
 							E = P
 						end
 					end
-					print(S,E)
 					if E then
 						local NickName = (AuthorizedChatters[E.Name] and AuthorizedChatters[E.Name].Names[math.random(1,#AuthorizedChatters[E.Name].Names)]) or E.Name
 						local Responses = {"Hello there, ","Hi there, ","Hello, "}
