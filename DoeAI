@@ -460,17 +460,18 @@ if TextChatService then
 				if string.find(Message,"doe say hello to") then
 					local G = string.gsub(Message,"doe say hello to","")
 					local S = string.gsub(G," ","")
-					local Found = nil
+					local E = nil
 					for i,P in pairs(game.Players:GetChildren()) do
 						local Lower = string.lower(P.Name)
 						print(S,Lower)
 						if string.find(Lower,S) then
-							Found = P
+							print("Player Found")
+							E = P
 						end
 					end
-					print(S,Found)
-					if Found then
-						local NickName = (AuthorizedChatters[Found.Name] and AuthorizedChatters[Found.Name].Names[math.random(1,#AuthorizedChatters[Found.Name].Names)]) or Found.Name
+					print(S,E)
+					if E then
+						local NickName = (AuthorizedChatters[E.Name] and AuthorizedChatters[E.Name].Names[math.random(1,#AuthorizedChatters[E.Name].Names)]) or E.Name
 						local Responses = {"Hello there, ","Hi there, ","Hello, "}
 						Chat(Responses[math.random(1,#Responses)]..NickName.."!")
 					end	
