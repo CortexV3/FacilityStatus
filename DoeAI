@@ -571,7 +571,7 @@ function CheckPartMember()
 		if PartMember:FindFirstChild("Humanoid") then
 			local PL = game.Players:GetPlayerFromCharacter(PartMember)
 			if PL and not AuthorizedChatters[PL.Name] then
-				Chat(PL.Name.." was in my way.")
+				Chat("I can see "..PL.Name..".")
 				PartMember = nil
 				ObjectCanSee = true
 			end
@@ -726,10 +726,13 @@ while Enabled do
 									GetLookingAtPlayer()
 									task.wait(0.25)
 								until Count >= 10 or MU.Character.PrimaryPart.Velocity.Magnitude > 0.01
-							else	
-								if math.random(1,10) >= 8 then
+							elseif not Player:FindFirstChild("ActiveLook")
+								if math.random(1,25) >= 20 then
 									LookRandom(Vector3.new(math.random(-50,50),0,math.random(-50,50)),true)
-									task.wait(4)
+									local L = Instance.new("StringValue")
+									L.Parent = Player
+									L.Name = "ActiveLook"
+									game:GetService("Debris"):AddItem(L,30)
 								else
 									LookAt()
 								end
@@ -749,16 +752,13 @@ while Enabled do
 				ClimbLadder()
 			end
 		end
-		if not PiggyBackEnabled then
-			if Player.Character.Humanoid.Sit ~= MU.Character.Humanoid.Sit then
-				if Player.Character.Humanoid.Sit == false then
-					GetSeat()
-				else
-					Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping,true)
-				end
+		if not PiggyBackEnabled and Follow and Player.Character.Humanoid.Sit ~= MU.Character.Humanoid.Sit then
+			if Player.Character.Humanoid.Sit == false then
+				GetSeat()
 			end
+		elseif Player.Character.Humanoid.Sit == true then
+			Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping,true)
 		end
-
 	end
 	end)
 	task.wait()
