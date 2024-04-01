@@ -274,13 +274,6 @@ else
 	Chat("Hmmm.")
 end
 
-if MU and not RayCast2() then
-	repeat 
-		LookRandom(Vector3.new(math.random(-200,200),0,math.random(-200,200)),true)
-		task.wait(4)
-	until RayCast2()
-end
-
 function GetDistance()
 	if not MU or not Player.Character or not Player.Character.PrimaryPart then
 		return 0
@@ -635,7 +628,9 @@ while Enabled do
 	if not Enabled then
 		break
 	end
+	pcall(function()
 
+	
 	if Follow == false or not MU or ElapsedAFKTime >= 170 then
 		if Player.Character and Player.Character.PrimaryPart then
 			if Player.Character.PrimaryPart.Velocity.Magnitude <= 0.1 then
@@ -684,7 +679,7 @@ while Enabled do
 			end
 			ElapsedAFKTime = 0
 		end
-		if Player.Character.PrimaryPart.Name ~= "HumanoidRootPart" then
+		if Player.Character and Player.Character.PrimaryPart and Player.Character.PrimaryPart.Name ~= "HumanoidRootPart" then
 			Player.Character.PrimaryPart = Player.Character:FindFirstChild("HumanoidRootPart")
 		end
 		if MU.Character.PrimaryPart.Name ~= "HumanoidRootPart" then
@@ -765,6 +760,7 @@ while Enabled do
 		end
 
 	end
+	end)
 	task.wait()
 
 end
