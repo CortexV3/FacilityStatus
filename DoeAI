@@ -442,11 +442,11 @@ if TextChatService then
 					Chat(Name.."!")
 				end
 
-				if string.match(Message,"soup eggs") then
+				if string.find(Message,"soup eggs") then
 					Chat("Soup Eggs in your bed, Soup Eggs on your head. Soup Eggs on your dad instead.")
 				end
-				if (string.match(Message, "hello ") == 1 or string.match(Message, "hai") == 1 or
-					string.match(Message, "hi ") == 1 or string.match(Message, "hey ") == 1) then
+				if (string.find(Message, "hello ") == 1 or string.find(Message, "hai") == 1 or
+					string.find(Message, "hi ") == 1 or string.find(Message, "hey ") == 1) then
 					if AuthorizedChatters[Speaker].LastMessageTheme == "Directed" then
 						local Responses = {"Hello there, ","Hi there, ","Hello, "}
 						Chat(Responses[math.random(1,#Responses)]..Name.."!")
@@ -456,7 +456,7 @@ if TextChatService then
 						Chat("You seem to be greeting me alot. You must be happy to see me")
 					end
 				end
-				if string.match(Message,"doe say hello to") == 1 then
+				if string.find(Message,"doe say hello to") == 1 then
 					local G = string.gsub(Message,"doe say hello to","")
 					local S = string.gsub(G," ","")
 					local Found = nil
@@ -471,11 +471,11 @@ if TextChatService then
 						Chat(Responses[math.random(1,#Responses)]..NickName.."!")
 					end	
 				end
-				if string.match(Message,"actlook") then
+				if string.find(Message,"actlook") then
 					Lookatmu = not Lookatmu
 					Chat("Pivoting is now set to "..tostring(Lookatmu)..".")
 				end
-				if string.match(Message,"actsee") then
+				if string.find(Message,"actsee") then
 					if LastObstruction == nil then
 						Chat("There are no objects in my view.")
 					else
@@ -489,11 +489,11 @@ if TextChatService then
 					end
 					AuthorizedChatters[Speaker].LastMessageTheme = "Emotion"                
 				end
-				if string.match(Message,"actstand") and Player.Character.Humanoid.Sit == true then
+				if string.find(Message,"actstand") and Player.Character.Humanoid.Sit == true then
 					Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping,true)
 					Process = true
 				end
-				if string.match(Message,"actsit") then
+				if string.find(Message,"actsit") then
 					Player.Character.Humanoid.Sit = true
 					Chat("I am now sitting.")
 					Process = true
@@ -503,7 +503,7 @@ if TextChatService then
 					Player.Character.Humanoid.Sit = true
 					Process = true
 				end
-				if string.match(Message,"actobjectinfo") then
+				if string.find(Message,"actobjectinfo") then
 					if PartMember then
 						if PartMember:FindFirstChild("Humanoid") then
 							Chat("The object I am looking at is a Humanoid Model called "..PartMember.Name..".")
@@ -517,7 +517,7 @@ if TextChatService then
 						Chat("No instance detected.")        
 					end
 				end
-				if string.match(Message,"actpiggyback") then
+				if string.find(Message,"actpiggyback") then
 					PiggyBackEnabled = not PiggyBackEnabled
 					if PiggyBackEnabled then
 						local SeatedChats = {"That's more comfortable","This seat is comfy.","Hey, "..Name..", were sitting together now!","",":D"}
@@ -529,7 +529,7 @@ if TextChatService then
 						Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping,true)
 					end
 				end
-				if string.match(Message,"actcheckview") then
+				if string.find(Message,"actcheckview") then
 					if RayCast() then
 						Chat("I can see you, "..Name..".")
 					else
@@ -537,7 +537,7 @@ if TextChatService then
 					end
 					Process = true
 				end
-				if string.match(Message,"acthelp") then
+				if string.find(Message,"acthelp") then
 					Help()
 					Process = true
 				end
