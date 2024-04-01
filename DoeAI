@@ -464,7 +464,7 @@ if TextChatService then
 					for i,P in pairs(game.Players:GetChildren()) do
 						local Lower = string.lower(P.Name)
 						print(S,Lower)
-						if string.match(S,Lower) then
+						if string.find(Lower,S) then
 							Found = P
 						end
 					end
