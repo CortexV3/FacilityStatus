@@ -458,7 +458,7 @@ if TextChatService then
 				end
 				if string.match(Message,"doe say hello to") then
 					local G = string.gsub(Message,"doe say hello to")
-					lcoal S = string.gsub(G," ","")
+					local S = string.gsub(G," ","")
 					local Found = nil
 					for i,P in pairs(game.Players:GetChildren()) do
 						if string.find(S,string.lower(P.Name)) then
