@@ -282,7 +282,7 @@ if MU and not RayCast2() then
 end
 
 function GetDistance()
-	if not MU then
+	if not MU or not Player.Character or not Player.Character.PrimaryPart then
 		return 0
 	end
 	return (Player.Character.PrimaryPart.Position - MU.Character.PrimaryPart.Position).Magnitude
