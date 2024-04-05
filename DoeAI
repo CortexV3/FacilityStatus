@@ -43,6 +43,10 @@ local AuthorizedChatters = {
 		["Names"] = {"Sentinel Commander"},
 		["LastMessageTheme"] = ""
 	}
+	["friendforyoutotrust"] = {
+		["Names"] = {"Hana","my friend"},
+		["LastMessageTheme"] = ""
+	}
 }
 
 function GetTools()
